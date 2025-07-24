@@ -1,4 +1,4 @@
-﻿import { Route, Routes, useLocation } from "react-router-dom";
+﻿import { Route, Routes } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -12,27 +12,46 @@ import Cart from "./pages/Cart";
 import Login from "./pages/Login";
 import PlaceOrder from "./pages/PlaceOrder";
 import Orders from "./pages/Orders";
+import Profile from "./pages/Profile";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import Verify from "./pages/Verify";
 import SearchBar from "./components/SearchBar";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 // Admin Components
 import AdminApp from "./admin/AdminApp";
+import AdminRoute from "./components/AdminRoute";
+import AdminLogin from "./admin/components/Login";
 
 const App = () => {
-  const location = useLocation();
-  const isAdminRoute = location.pathname.startsWith('/admin');
+  return (
+    <>
+      <ToastContainer />
+      <Routes>
+        {/* Admin Login Route */}
+        <Route path="/admin/login" element={<AdminLogin />} />
 
-  // If it's an admin route, render the AdminApp
-  if (isAdminRoute) {
-    return <AdminApp />;
-  }
+        {/* Admin Routes - Protected */}
+        <Route
+          path="/admin/*"
+          element={
+            <AdminRoute>
+              <AdminApp />
+            </AdminRoute>
+          }
+        />
 
-  // Otherwise render the customer frontend
+        {/* Customer Frontend Routes */}
+        <Route path="/*" element={<CustomerApp />} />
+      </Routes>
+    </>
+  );
+};
+
+const CustomerApp = () => {
   return (
     <div className="px-4 sm:px-[5vw] md:px-[7vw] lg:px-[9vw]">
-      <ToastContainer />
       <Navbar />
       <SearchBar />
       <Routes>
@@ -43,8 +62,30 @@ const App = () => {
         <Route path="/product/:productId" element={<Product />} />
         <Route path="/cart" element={<Cart />} />
         <Route path="/login" element={<Login />} />
-        <Route path="/place-order" element={<PlaceOrder />} />
-        <Route path="/orders" element={<Orders />} />
+        <Route
+          path="/place-order"
+          element={
+            <ProtectedRoute>
+              <PlaceOrder />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/orders"
+          element={
+            <ProtectedRoute>
+              <Orders />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/profile"
+          element={
+            <ProtectedRoute>
+              <Profile />
+            </ProtectedRoute>
+          }
+        />
         <Route path="/verify" element={<Verify />} />
       </Routes>
       <Footer />

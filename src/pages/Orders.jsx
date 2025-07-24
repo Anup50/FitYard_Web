@@ -1,7 +1,7 @@
 import { useContext, useEffect, useState } from "react";
 import { ShopContext } from "../context/ShopContext";
 import Title from "../components/Title";
-import axios from "axios";
+import { getUserOrders } from "../api/orders";
 import { toast } from "react-toastify";
 
 const Orders = () => {
@@ -15,11 +15,7 @@ const Orders = () => {
         return null;
       }
 
-      const res = await axios.post(
-        backendUrl + "/api/order/userorders",
-        {},
-        { headers: { token } }
-      );
+      const res = await getUserOrders();
 
       if (res.data.success) {
         let allOrdersItem = [];

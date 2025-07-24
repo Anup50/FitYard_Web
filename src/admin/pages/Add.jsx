@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { assets } from "../assets/assets";
-import axios from "axios";
-import { backendUrl } from "../App";
+import { addProduct } from "../../api/products";
 import { toast } from "react-toastify";
 
 const Add = ({ token }) => {
@@ -17,10 +16,39 @@ const Add = ({ token }) => {
   const [subCategory, setSubCategory] = useState("Topwear");
   const [bestseller, setBestseller] = useState(false);
   const [sizes, setSizes] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   const onSubmitHandler = async (e) => {
     e.preventDefault();
+
+    // Basic validation
+    if (!name.trim()) {
+      toast.error("Product name is required");
+      return;
+    }
+
+    if (!description.trim()) {
+      toast.error("Product description is required");
+      return;
+    }
+
+    if (!price || price <= 0) {
+      toast.error("Please enter a valid price");
+      return;
+    }
+
+    if (sizes.length === 0) {
+      toast.error("Please select at least one size");
+      return;
+    }
+
+    if (!image1) {
+      toast.error("Please upload at least one product image");
+      return;
+    }
+
     try {
+      setLoading(true);
       const formData = new FormData();
 
       formData.append("name", name);
@@ -36,11 +64,7 @@ const Add = ({ token }) => {
       image3 && formData.append("image3", image3);
       image4 && formData.append("image4", image4);
 
-      const response = await axios.post(
-        backendUrl + "/api/product/add",
-        formData,
-        { headers: { token } }
-      );
+      const response = await addProduct(formData, token);
 
       if (response.data.success) {
         toast.success(response.data.message);
@@ -51,12 +75,18 @@ const Add = ({ token }) => {
         setImage3(false);
         setImage4(false);
         setPrice("");
+        setSizes([]);
+        setBestseller(false);
+        setCategory("Men");
+        setSubCategory("Topwear");
       } else {
         toast.error(response.data.message);
       }
     } catch (error) {
       console.log(error);
-      toast.error(error.message);
+      toast.error(error.response?.data?.message || "Failed to add product");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -289,10 +319,11 @@ const Add = ({ token }) => {
       </div>
 
       <button
-        className="w-28 py-3 mt-4 bg-black bg-black text-white"
+        className="w-28 py-3 mt-4 bg-black text-white disabled:opacity-50"
         type="submit"
+        disabled={loading}
       >
-        Add
+        {loading ? "Adding..." : "Add"}
       </button>
     </form>
   );

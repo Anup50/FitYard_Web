@@ -1,6 +1,7 @@
 import { createContext, useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
+import { fetchProducts } from "../api/products";
 import axios from "axios";
 
 export const ShopContext = createContext();
@@ -108,7 +109,7 @@ const ShopContextProvider = (props) => {
 
   const getProductsData = async () => {
     try {
-      const response = await axios.get(backendUrl + "/api/product/list");
+      const response = await fetchProducts();
 
       if (response.data.success) {
         setProducts(response.data.products);
@@ -117,7 +118,10 @@ const ShopContextProvider = (props) => {
       }
     } catch (error) {
       console.log(error);
-      toast.error(error.message);
+      // Don't show toast error for network issues on startup
+      if (error.code !== "ERR_NETWORK") {
+        toast.error(error.message);
+      }
     }
   };
 

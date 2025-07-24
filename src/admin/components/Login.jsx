@@ -1,27 +1,48 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { toast } from "react-toastify";
 import { useAuth } from "../../context/AuthContext";
+import { useNavigate, useLocation } from "react-router-dom";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const { login } = useAuth();
+  const { login, isAuthenticated, isAdmin } = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const from = location.state?.from?.pathname || "/admin";
+
+  console.log("Admin login page - from:", from);
+  console.log("location.state:", location.state);
+
+  // Redirect if already authenticated as admin
+  useEffect(() => {
+    if (isAuthenticated() && isAdmin()) {
+      console.log("Already authenticated admin, redirecting to:", from);
+      navigate(from, { replace: true });
+    }
+  }, [isAuthenticated, isAdmin, navigate, from]);
 
   const onSubmitHandler = async (e) => {
     e.preventDefault();
     setLoading(true);
-    
+
     try {
+      console.log("Attempting admin login...");
       const result = await login(email, password, true); // true for admin login
-      
+      console.log("Login result:", result);
+
       if (result.success) {
         toast.success("Admin login successful!");
+        console.log("Redirecting to admin dashboard");
+        // Redirect to admin add page directly
+        window.location.href = "/admin/add";
       } else {
         toast.error(result.message || "Login failed");
       }
     } catch (error) {
-      console.log(error);
+      console.log("Login error:", error);
       toast.error("Login failed. Please try again.");
     } finally {
       setLoading(false);
@@ -29,9 +50,36 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center w-full ">
+    <div className="min-h-screen flex items-center justify-center w-full bg-gray-50">
       <div className="bg-white shadow-md rounded-lg px-8 py-6 max-w-md">
-        <h1 className="text-2xl font-bold mb-4">Admin Panel</h1>
+        <div className="text-center mb-6">
+          <h1 className="text-2xl font-bold mb-2">Admin Panel</h1>
+          <div className="bg-yellow-50 border border-yellow-200 rounded-md p-3 mb-4">
+            <div className="flex items-center">
+              <div className="flex-shrink-0">
+                <svg
+                  className="h-5 w-5 text-yellow-400"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+              </div>
+              <div className="ml-3">
+                <p className="text-sm text-yellow-800">
+                  <strong>Authentication Required</strong>
+                  <br />
+                  You are not authenticated. Please login to access the admin
+                  panel.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
         <form onSubmit={onSubmitHandler}>
           <div className="mb-3 mn-w-72">
             <p className="text-sm font-medium text-gray-700 mb-2">

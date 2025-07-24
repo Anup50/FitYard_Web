@@ -53,7 +53,6 @@ import SideBar from "./components/SideBar";
 import Add from "./pages/Add";
 import List from "./pages/List";
 import Order from "./pages/Order";
-import Login from "./components/Login";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useAuth } from "../context/AuthContext";
@@ -62,19 +61,9 @@ export const backendUrl = import.meta.env.VITE_BACKEND_URL;
 export const currency = "$";
 
 const AdminApp = () => {
-  const { user, token, logout, login } = useAuth();
+  const { user, token, logout } = useAuth();
 
-  // If no token, show login page
-  if (!token) {
-    return (
-      <div className="bg-gray-50 min-h-screen">
-        <ToastContainer />
-        <Login setToken={(email, password) => login(email, password, true)} />
-      </div>
-    );
-  }
-
-  // If logged in, show admin dashboard
+  // Admin is authenticated (handled by AdminRoute), show admin dashboard
   return (
     <div className="bg-gray-50 min-h-screen">
       <ToastContainer />
@@ -84,9 +73,10 @@ const AdminApp = () => {
         <SideBar />
         <div className="w-[70%] mx-auto ml-[max(5vw, 25px)] my-8 text-gray-600 text-base">
           <Routes>
-            <Route path="/add" element={<Add token={token} />} />
-            <Route path="/list" element={<List token={token} />} />
-            <Route path="/orders" element={<Order token={token} />} />
+            <Route path="add" element={<Add token={token} />} />
+            <Route path="list" element={<List token={token} />} />
+            <Route path="orders" element={<Order token={token} />} />
+            <Route index element={<Add token={token} />} />
           </Routes>
         </div>
       </div>

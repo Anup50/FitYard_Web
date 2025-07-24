@@ -34,78 +34,106 @@ const Cart = () => {
         <Title text1={"YOUR"} text2={"CART"} />
       </div>
 
-      <div>
-        {cartData.map((item, i) => {
-          const productsData = products.find(
-            (product) => product._id === item._id
-          );
-
-          return (
-            <div
-              className="py-4 border-t border-b text-gray-700 grid grid-cols-[4fr_0.5fr_0.5fr] sm:grid-cols-[4fr_2fr_0.5fr] items-center gap-4"
-              key={i}
-            >
-              <div className="flex items-start gap-6">
-                <img
-                  src={productsData.image[0]}
-                  className="w-16 sm:w-20"
-                  alt=""
-                />
-                <div>
-                  <p className="text-xs sm:text-lg font-medium">
-                    {productsData.name}
-                  </p>
-                  <div className="flex items-center gap-5 mt-2">
-                    <p>
-                      {currency}
-                      {productsData.price}
-                    </p>
-                    <p className="px-2 sm:px-3 sm:py-1 border bg-stale-50">
-                      {item.size}
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              <input
-                className="border max-w-10 sm:max-w-20 px-1 sm:px-2 py-1"
-                type="number"
-                min={1}
-                defaultValue={item.quantity}
-                onChange={(e) =>
-                  e.target.value === "" || e.target.value === "0"
-                    ? null
-                    : updateQuantity(
-                        item._id,
-                        item.size,
-                        Number(e.target.value)
-                      )
-                }
-              />
-              <img
-                src={assets.bin_icon}
-                className="w-4 mr-4 sm:w-5 cursor-pointer"
-                alt=""
-                onClick={() => updateQuantity(item._id, item.size, 0)}
-              />
-            </div>
-          );
-        })}
-      </div>
-
-      <div className="flex justify-end my-20">
-        <div className="w-full sm:w-[450px]">
-          <CartTotal />
-          <div className="w-full text-end">
+      {cartData.length === 0 ? (
+        // Empty cart state
+        <div className="flex flex-col items-center justify-center py-20">
+          <div className="text-center">
+            <img
+              src={assets.cart_icon}
+              alt="Empty Cart"
+              className="w-20 h-20 mx-auto mb-6 opacity-50"
+            />
+            <h3 className="text-2xl font-medium text-gray-800 mb-2">
+              Your Cart is Empty
+            </h3>
+            <p className="text-gray-600 mb-8">
+              Looks like you haven't added any items to your cart yet.
+            </p>
             <button
-              className="bg-black text-white text-sm my-8 px-8 py-3"
-              onClick={() => navigate("/place-order")}
+              onClick={() => navigate("/collection")}
+              className="bg-black text-white px-8 py-3 text-sm hover:bg-gray-800 transition-colors"
             >
-              PROCEED TO CHECKOUT
+              CONTINUE SHOPPING
             </button>
           </div>
         </div>
-      </div>
+      ) : (
+        // Cart with items
+        <>
+          <div>
+            {cartData.map((item, i) => {
+              const productsData = products.find(
+                (product) => product._id === item._id
+              );
+
+              return (
+                <div
+                  className="py-4 border-t border-b text-gray-700 grid grid-cols-[4fr_0.5fr_0.5fr] sm:grid-cols-[4fr_2fr_0.5fr] items-center gap-4"
+                  key={i}
+                >
+                  <div className="flex items-start gap-6">
+                    <img
+                      src={productsData.image[0]}
+                      className="w-16 sm:w-20"
+                      alt=""
+                    />
+                    <div>
+                      <p className="text-xs sm:text-lg font-medium">
+                        {productsData.name}
+                      </p>
+                      <div className="flex items-center gap-5 mt-2">
+                        <p>
+                          {currency}
+                          {productsData.price}
+                        </p>
+                        <p className="px-2 sm:px-3 sm:py-1 border bg-stale-50">
+                          {item.size}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <input
+                    className="border max-w-10 sm:max-w-20 px-1 sm:px-2 py-1"
+                    type="number"
+                    min={1}
+                    defaultValue={item.quantity}
+                    onChange={(e) =>
+                      e.target.value === "" || e.target.value === "0"
+                        ? null
+                        : updateQuantity(
+                            item._id,
+                            item.size,
+                            Number(e.target.value)
+                          )
+                    }
+                  />
+                  <img
+                    src={assets.bin_icon}
+                    className="w-4 mr-4 sm:w-5 cursor-pointer"
+                    alt=""
+                    onClick={() => updateQuantity(item._id, item.size, 0)}
+                  />
+                </div>
+              );
+            })}
+          </div>
+
+          <div className="flex justify-end my-20">
+            <div className="w-full sm:w-[450px]">
+              <CartTotal />
+              <div className="w-full text-end">
+                <button
+                  className="bg-black text-white text-sm my-8 px-8 py-3"
+                  onClick={() => navigate("/place-order")}
+                >
+                  PROCEED TO CHECKOUT
+                </button>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
     </div>
   );
 };

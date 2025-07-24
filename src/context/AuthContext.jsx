@@ -33,9 +33,7 @@ export const AuthProvider = ({ children }) => {
     const checkAuth = async () => {
       if (token) {
         try {
-          const response = await axios.get(
-            `${backendUrl}/api/user/profile`
-          );
+          const response = await axios.get(`${backendUrl}/api/user/profile`);
           setUser(response.data.user);
         } catch (error) {
           console.error("Auth check failed:", error);
@@ -58,6 +56,9 @@ export const AuthProvider = ({ children }) => {
 
       if (response.data.success) {
         const { token: newToken, user: userData } = response.data;
+        console.log("AuthContext login response:", response.data);
+        console.log("Token:", newToken);
+        console.log("User data:", userData);
 
         localStorage.setItem("token", newToken);
         setToken(newToken);
@@ -85,8 +86,22 @@ export const AuthProvider = ({ children }) => {
     delete axios.defaults.headers.common["Authorization"];
   };
 
-  const isAuthenticated = () => !!user;
-  const isAdmin = () => user?.role === "admin";
+  const isAuthenticated = () => {
+    const authenticated = !!user;
+    console.log(
+      "isAuthenticated check - user:",
+      user,
+      "result:",
+      authenticated
+    );
+    return authenticated;
+  };
+
+  const isAdmin = () => {
+    const admin = user?.role === "admin";
+    console.log("isAdmin check - user role:", user?.role, "result:", admin);
+    return admin;
+  };
 
   const value = {
     user,

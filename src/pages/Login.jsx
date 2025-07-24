@@ -1,11 +1,14 @@
 import { useContext, useEffect, useState } from "react";
 import { ShopContext } from "../context/ShopContext";
-import axios from "axios";
 import { toast } from "react-toastify";
+import OTPVerification from "./OTPVerification";
+import { register, login as loginApi, resendOTP } from "../api/auth";
 
 const Login = () => {
   const { token, setToken, navigate, backendUrl } = useContext(ShopContext);
   const [currentState, setCurrentState] = useState("Login");
+  const [showOTP, setShowOTP] = useState(false);
+  const [pendingRegistration, setPendingRegistration] = useState(null);
 
   const [name, setName] = useState("");
   const [password, setPassword] = useState("");
@@ -15,24 +18,17 @@ const Login = () => {
     e.preventDefault();
     try {
       if (currentState === "Sign Up") {
-        const res = await axios.post(backendUrl + "/api/user/register", {
-          name,
-          email,
-          password,
-        });
-
+        const res = await register({ name, email, password });
         if (res.data.success) {
-          setToken(res.data.token);
-          localStorage.setItem("token", res.data.token);
+          // Always show OTP page after successful registration
+          setShowOTP(true);
+          setPendingRegistration({ name, email, password });
+          toast.success("OTP sent to your email!");
         } else {
           toast.error(res.data.message);
         }
       } else {
-        const res = await axios.post(backendUrl + "/api/user/login", {
-          email,
-          password,
-        });
-
+        const res = await loginApi({ email, password });
         if (res.data.success) {
           setToken(res.data.token);
           localStorage.setItem("token", res.data.token);
@@ -42,8 +38,43 @@ const Login = () => {
       }
     } catch (error) {
       console.log(error);
-      toast.error(error.message);
+      toast.error(error.response?.data?.message || error.message);
     }
+  };
+
+  // Handle successful OTP verification
+  const handleOTPVerifySuccess = (otpData) => {
+    // Show success message and redirect to login
+    toast.success(
+      "Registration completed successfully! Please login with your credentials."
+    );
+    setShowOTP(false);
+    setPendingRegistration(null);
+    setCurrentState("Login");
+    // Clear form fields
+    setName("");
+    setEmail("");
+    setPassword("");
+  };
+
+  // Handle OTP resend
+  const handleOTPResend = async () => {
+    try {
+      const res = await resendOTP({ email: pendingRegistration.email });
+      if (res.data.success) {
+        toast.success("New OTP sent to your email!");
+      } else {
+        toast.error(res.data.message);
+      }
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Failed to resend OTP");
+    }
+  };
+
+  // Go back to registration form
+  const handleBackToRegistration = () => {
+    setShowOTP(false);
+    setPendingRegistration(null);
   };
 
   useEffect(() => {
@@ -52,6 +83,19 @@ const Login = () => {
     }
   }, [token]);
 
+  // Show OTP verification if needed
+  if (showOTP && pendingRegistration) {
+    return (
+      <OTPVerification
+        email={pendingRegistration.email}
+        onVerifySuccess={handleOTPVerifySuccess}
+        onResendOTP={handleOTPResend}
+        onBack={handleBackToRegistration}
+      />
+    );
+  }
+
+  // Show login/registration form
   return (
     <form
       onSubmit={onSubmitHandler}
