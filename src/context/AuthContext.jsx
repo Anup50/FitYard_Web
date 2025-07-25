@@ -1,7 +1,12 @@
 // Copy this file to: CW_1/frontend/src/context/AuthContext.jsx
 
 import React, { createContext, useContext, useState, useEffect } from "react";
-import axios from "axios";
+import { getUserProfile } from "../api/user";
+import {
+  login as loginApi,
+  logout as logoutApi,
+  adminLogin,
+} from "../api/auth";
 
 const AuthContext = createContext();
 
@@ -16,54 +21,42 @@ export const useAuth = () => {
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [token, setToken] = useState(localStorage.getItem("token"));
-  const backendUrl = import.meta.env.VITE_BACKEND_URL;
-
-  // Configure axios defaults
-  useEffect(() => {
-    if (token) {
-      axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-    } else {
-      delete axios.defaults.headers.common["Authorization"];
-    }
-  }, [token]);
 
   // Check authentication status on app load
   useEffect(() => {
     const checkAuth = async () => {
-      if (token) {
-        try {
-          const response = await axios.get(`${backendUrl}/api/user/profile`);
+      try {
+        const response = await getUserProfile();
+        if (response.data.success) {
           setUser(response.data.user);
-        } catch (error) {
-          console.error("Auth check failed:", error);
-          logout();
         }
+      } catch (error) {
+        console.error("Auth check failed:", error);
+        setUser(null);
       }
       setLoading(false);
     };
 
     checkAuth();
-  }, [token]);
+  }, []);
 
-  const login = async (email, password, isAdmin = false) => {
+  const login = async (email, password, isAdmin = false, captcha = null) => {
     try {
-      const endpoint = isAdmin ? "/api/user/admin" : "/api/user/login";
-      const response = await axios.post(`${backendUrl}${endpoint}`, {
-        email,
-        password,
-      });
+      const loginData = { email, password };
+      if (captcha) {
+        loginData.captcha = captcha;
+      }
+
+      const response = isAdmin
+        ? await adminLogin(loginData)
+        : await loginApi(loginData);
 
       if (response.data.success) {
-        const { token: newToken, user: userData } = response.data;
+        const { user: userData } = response.data;
         console.log("AuthContext login response:", response.data);
-        console.log("Token:", newToken);
         console.log("User data:", userData);
 
-        localStorage.setItem("token", newToken);
-        setToken(newToken);
         setUser(userData);
-
         return { success: true, user: userData };
       } else {
         return {
@@ -79,11 +72,13 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const logout = () => {
-    localStorage.removeItem("token");
-    setToken(null);
+  const logout = async () => {
+    try {
+      await logoutApi(); // Call backend to clear session cookie
+    } catch (error) {
+      console.error("Logout error:", error);
+    }
     setUser(null);
-    delete axios.defaults.headers.common["Authorization"];
   };
 
   const isAuthenticated = () => {
@@ -105,7 +100,6 @@ export const AuthProvider = ({ children }) => {
 
   const value = {
     user,
-    token,
     loading,
     login,
     logout,

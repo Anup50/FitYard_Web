@@ -2,7 +2,11 @@ import { createContext, useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import { fetchProducts } from "../api/products";
-import axios from "axios";
+import {
+  addToCart as addToCartApi,
+  updateCart,
+  getUserCart as fetchUserCart,
+} from "../api/cart";
 
 export const ShopContext = createContext();
 
@@ -14,7 +18,6 @@ const ShopContextProvider = (props) => {
   const [showSearch, setShowSearch] = useState(false);
   const [cartItems, setCartItems] = useState({});
   const [products, setProducts] = useState([]);
-  const [token, setToken] = useState("");
 
   const navigate = useNavigate();
 
@@ -40,17 +43,11 @@ const ShopContextProvider = (props) => {
 
     setCartItems(cartData);
 
-    if (token) {
-      try {
-        await axios.post(
-          backendUrl + "/api/cart/add",
-          { itemId, size },
-          { headers: { token } }
-        );
-      } catch (e) {
-        console.log(e);
-        toast.error(e.message);
-      }
+    try {
+      await addToCartApi(itemId, size);
+    } catch (e) {
+      console.log(e);
+      toast.error(e.message);
     }
   };
 
@@ -76,17 +73,11 @@ const ShopContextProvider = (props) => {
 
     setCartItems(cartData);
 
-    if (token) {
-      try {
-        await axios.post(
-          backendUrl + "/api/cart/update",
-          { itemId, size, quantity },
-          { headers: { token } }
-        );
-      } catch (e) {
-        console.log(e);
-        toast.error(e.message);
-      }
+    try {
+      await updateCart(itemId, size, quantity);
+    } catch (e) {
+      console.log(e);
+      toast.error(e.message);
     }
   };
 
@@ -125,32 +116,25 @@ const ShopContextProvider = (props) => {
     }
   };
 
-  const getUserCart = async (token) => {
+  const getUserCart = async () => {
     try {
-      const res = await axios.post(
-        backendUrl + "/api/cart/get",
-        {},
-        { headers: { token } }
-      );
+      const res = await fetchUserCart();
 
-      if (res.data.success) {
-        setCartItems(res.data.cartData);
+      if (res && res.data && res.data.success) {
+        setCartItems(res.data.cartData || {});
       }
     } catch (error) {
-      console.log(error);
-      toast.error(error.message);
+      console.log("Cart error:", error);
+      // Don't show cart error if user is not logged in or if it's a CORS/network error
+      if (error.response?.status !== 401 && error.code !== "ERR_NETWORK") {
+        toast.error("Failed to load cart");
+      }
     }
   };
 
   useEffect(() => {
     getProductsData();
-  }, []);
-
-  useEffect(() => {
-    if (!token && localStorage.getItem("token")) {
-      setToken(localStorage.getItem("token"));
-      getUserCart(localStorage.getItem("token"));
-    }
+    getUserCart(); // Load cart on app start
   }, []);
 
   const value = {
@@ -168,8 +152,6 @@ const ShopContextProvider = (props) => {
     getCartAmount,
     navigate,
     backendUrl,
-    token,
-    setToken,
     setCartItems,
   };
 

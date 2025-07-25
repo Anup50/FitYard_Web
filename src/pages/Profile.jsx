@@ -4,6 +4,7 @@ import { useAuth } from "../context/AuthContext";
 import { toast } from "react-toastify";
 import Title from "../components/Title";
 import { assets } from "../assets/assets";
+import PasswordStrengthBar from "../components/PasswordStrengthBar";
 import {
   getUserProfile,
   updateUserProfile,
@@ -13,7 +14,7 @@ import {
 import { getUserOrders } from "../api/orders";
 
 const Profile = () => {
-  const { backendUrl, token, navigate } = useContext(ShopContext);
+  const { navigate } = useContext(ShopContext);
   const { user, logout } = useAuth();
 
   // Profile data state
@@ -85,10 +86,10 @@ const Profile = () => {
   };
 
   useEffect(() => {
-    if (activeTab === "orders" && token) {
+    if (activeTab === "orders" && user) {
       fetchOrders();
     }
-  }, [activeTab, token]);
+  }, [activeTab, user]);
 
   // Handle profile update
   const handleProfileUpdate = async (e) => {
@@ -569,6 +570,7 @@ const Profile = () => {
                 required
                 minLength={6}
               />
+              <PasswordStrengthBar password={passwordData.newPassword} />
             </div>
 
             <div>

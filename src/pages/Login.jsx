@@ -1,14 +1,20 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState, useRef } from "react";
 import { ShopContext } from "../context/ShopContext";
+import { useAuth } from "../context/AuthContext";
 import { toast } from "react-toastify";
+import ReCAPTCHA from "react-google-recaptcha";
 import OTPVerification from "./OTPVerification";
-import { register, login as loginApi, resendOTP } from "../api/auth";
+import PasswordStrengthBar from "../components/PasswordStrengthBar";
+import { register, resendOTP } from "../api/auth";
 
 const Login = () => {
-  const { token, setToken, navigate, backendUrl } = useContext(ShopContext);
+  const { navigate } = useContext(ShopContext);
+  const { login, isAuthenticated } = useAuth();
   const [currentState, setCurrentState] = useState("Login");
   const [showOTP, setShowOTP] = useState(false);
   const [pendingRegistration, setPendingRegistration] = useState(null);
+  const [captchaValue, setCaptchaValue] = useState(null);
+  const captchaRef = useRef(null);
 
   const [name, setName] = useState("");
   const [password, setPassword] = useState("");
@@ -16,29 +22,53 @@ const Login = () => {
 
   const onSubmitHandler = async (e) => {
     e.preventDefault();
+
+    // Check CAPTCHA
+    if (!captchaValue) {
+      toast.error("Please complete the CAPTCHA verification");
+      return;
+    }
+
     try {
       if (currentState === "Sign Up") {
-        const res = await register({ name, email, password });
+        const res = await register({
+          name,
+          email,
+          password,
+          captcha: captchaValue,
+        });
         if (res.data.success) {
           // Always show OTP page after successful registration
           setShowOTP(true);
           setPendingRegistration({ name, email, password });
           toast.success("OTP sent to your email!");
+          // Reset captcha
+          setCaptchaValue(null);
+          captchaRef.current?.reset();
         } else {
           toast.error(res.data.message);
+          // Reset captcha on error
+          setCaptchaValue(null);
+          captchaRef.current?.reset();
         }
       } else {
-        const res = await loginApi({ email, password });
-        if (res.data.success) {
-          setToken(res.data.token);
-          localStorage.setItem("token", res.data.token);
+        const result = await login(email, password, false, captchaValue);
+        if (result.success) {
+          toast.success("Login successful!");
+          navigate("/");
         } else {
-          toast.error(res.data.message);
+          toast.error(result.message);
+          // Reset captcha on error
+          setCaptchaValue(null);
+          captchaRef.current?.reset();
         }
       }
     } catch (error) {
       console.log(error);
       toast.error(error.response?.data?.message || error.message);
+      // Reset captcha on error
+      setCaptchaValue(null);
+      captchaRef.current?.reset();
     }
   };
 
@@ -78,10 +108,10 @@ const Login = () => {
   };
 
   useEffect(() => {
-    if (token) {
+    if (isAuthenticated()) {
       navigate("/");
     }
-  }, [token]);
+  }, [isAuthenticated, navigate]);
 
   // Show OTP verification if needed
   if (showOTP && pendingRegistration) {
@@ -134,6 +164,19 @@ const Login = () => {
         onChange={(e) => setPassword(e.target.value)}
         value={password}
       />
+      {currentState === "Sign Up" && (
+        <PasswordStrengthBar password={password} />
+      )}
+
+      {/* reCAPTCHA */}
+      <div className="w-full flex justify-center">
+        <ReCAPTCHA
+          ref={captchaRef}
+          sitekey={import.meta.env.VITE_RECAPTCHA_SITE_KEY}
+          onChange={(value) => setCaptchaValue(value)}
+          onExpired={() => setCaptchaValue(null)}
+        />
+      </div>
 
       <div className="w-full flex justify-between text-sm mt-[-8px]">
         <p className="cursor-pointer">Forgot your password?</p>

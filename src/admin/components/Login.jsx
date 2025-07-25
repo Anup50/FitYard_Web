@@ -1,5 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { toast } from "react-toastify";
+import ReCAPTCHA from "react-google-recaptcha";
 import { useAuth } from "../../context/AuthContext";
 import { useNavigate, useLocation } from "react-router-dom";
 
@@ -7,6 +8,8 @@ const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [captchaValue, setCaptchaValue] = useState(null);
+  const captchaRef = useRef(null);
   const { login, isAuthenticated, isAdmin } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
@@ -26,11 +29,18 @@ const Login = () => {
 
   const onSubmitHandler = async (e) => {
     e.preventDefault();
+    
+    // Check CAPTCHA
+    if (!captchaValue) {
+      toast.error("Please complete the CAPTCHA verification");
+      return;
+    }
+
     setLoading(true);
 
     try {
       console.log("Attempting admin login...");
-      const result = await login(email, password, true); // true for admin login
+      const result = await login(email, password, true, captchaValue); // true for admin login, with captcha
       console.log("Login result:", result);
 
       if (result.success) {
@@ -40,10 +50,16 @@ const Login = () => {
         window.location.href = "/admin/add";
       } else {
         toast.error(result.message || "Login failed");
+        // Reset captcha on error
+        setCaptchaValue(null);
+        captchaRef.current?.reset();
       }
     } catch (error) {
       console.log("Login error:", error);
       toast.error("Login failed. Please try again.");
+      // Reset captcha on error
+      setCaptchaValue(null);
+      captchaRef.current?.reset();
     } finally {
       setLoading(false);
     }
@@ -103,6 +119,16 @@ const Login = () => {
               required
               onChange={(e) => setPassword(e.target.value)}
               value={password}
+            />
+          </div>
+
+          {/* reCAPTCHA */}
+          <div className="mb-4 flex justify-center">
+            <ReCAPTCHA
+              ref={captchaRef}
+              sitekey={import.meta.env.VITE_RECAPTCHA_SITE_KEY}
+              onChange={(value) => setCaptchaValue(value)}
+              onExpired={() => setCaptchaValue(null)}
             />
           </div>
 
