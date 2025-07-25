@@ -3,8 +3,14 @@ import Title from "../components/Title";
 import CartTotal from "../components/CartTotal";
 import { assets } from "../assets/assets";
 import { ShopContext } from "../context/ShopContext";
-import axios from "axios";
+import { useAuth } from "../context/AuthContext";
 import { toast } from "react-toastify";
+import {
+  placeCODOrder,
+  placeStripeOrder,
+  placeRazorpayOrder,
+  verifyRazorpayPayment,
+} from "../api/orders";
 
 const PlaceOrder = () => {
   const {
@@ -13,10 +19,10 @@ const PlaceOrder = () => {
     cartItems,
     getCartAmount,
     navigate,
-    backendUrl,
-    token,
     setCartItems,
   } = useContext(ShopContext);
+
+  const { isAuthenticated } = useAuth();
 
   const [method, setMethod] = useState("cod");
   const [formData, setFormData] = useState({
@@ -40,6 +46,13 @@ const PlaceOrder = () => {
 
   const onSubmitHandler = async (e) => {
     e.preventDefault();
+
+    // Check if user is authenticated
+    if (!isAuthenticated()) {
+      toast.error("Please login to place an order");
+      navigate("/login");
+      return;
+    }
 
     try {
       const orderItems = [];
@@ -67,13 +80,9 @@ const PlaceOrder = () => {
       };
 
       switch (method) {
-        //API CALLS FOR COF
+        //API CALLS FOR COD
         case "cod":
-          const res = await axios.post(
-            backendUrl + "/api/order/place",
-            orderData,
-            { headers: { token } }
-          );
+          const res = await placeCODOrder(orderData);
           if (res.data.success) {
             setCartItems({});
             navigate("/orders");
@@ -83,11 +92,7 @@ const PlaceOrder = () => {
           break;
 
         case "stripe":
-          const responseStripe = await axios.post(
-            backendUrl + "/api/order/stripe",
-            orderData,
-            { headers: { token } }
-          );
+          const responseStripe = await placeStripeOrder(orderData);
 
           if (responseStripe.data.success) {
             const { session_url } = responseStripe.data;

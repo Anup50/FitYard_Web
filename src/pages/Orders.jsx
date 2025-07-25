@@ -1,17 +1,19 @@
 import { useContext, useEffect, useState } from "react";
 import { ShopContext } from "../context/ShopContext";
+import { useAuth } from "../context/AuthContext";
 import Title from "../components/Title";
 import { getUserOrders } from "../api/orders";
 import { toast } from "react-toastify";
 
 const Orders = () => {
-  const { backendUrl, token, currency } = useContext(ShopContext);
+  const { backendUrl, currency } = useContext(ShopContext);
+  const { isAuthenticated } = useAuth();
 
   const [orderData, setOrderData] = useState([]);
 
   const loadOrderData = async () => {
     try {
-      if (!token) {
+      if (!isAuthenticated()) {
         return null;
       }
 
@@ -41,7 +43,7 @@ const Orders = () => {
 
   useEffect(() => {
     loadOrderData();
-  }, [token]);
+  }, [isAuthenticated]);
 
   return (
     <div className="border-t pt-16">

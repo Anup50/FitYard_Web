@@ -1,6 +1,7 @@
 import { createContext, useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "./AuthContext";
 import { fetchProducts } from "../api/products";
 import {
   addToCart as addToCartApi,
@@ -19,11 +20,19 @@ const ShopContextProvider = (props) => {
   const [cartItems, setCartItems] = useState({});
   const [products, setProducts] = useState([]);
 
+  const { isAuthenticated, user, loading } = useAuth();
   const navigate = useNavigate();
 
   const addToCart = async (itemId, size) => {
     if (!size) {
       toast.error("Select product size!");
+      return;
+    }
+
+    // Check if user is authenticated before adding to cart
+    if (!isAuthenticated()) {
+      toast.error("Please login to add items to cart");
+      navigate("/login");
       return;
     }
 
@@ -67,6 +76,13 @@ const ShopContextProvider = (props) => {
   };
 
   const updateQuantity = async (itemId, size, quantity) => {
+    // Check if user is authenticated before updating cart
+    if (!isAuthenticated()) {
+      toast.error("Please login to update cart");
+      navigate("/login");
+      return;
+    }
+
     let cartData = structuredClone(cartItems);
 
     cartData[itemId][size] = quantity;
@@ -117,6 +133,11 @@ const ShopContextProvider = (props) => {
   };
 
   const getUserCart = async () => {
+    // Only fetch cart if user is authenticated
+    if (!isAuthenticated()) {
+      return;
+    }
+
     try {
       const res = await fetchUserCart();
 
@@ -134,8 +155,17 @@ const ShopContextProvider = (props) => {
 
   useEffect(() => {
     getProductsData();
-    getUserCart(); // Load cart on app start
   }, []);
+
+  // Load cart when user becomes authenticated
+  useEffect(() => {
+    if (!loading && isAuthenticated()) {
+      getUserCart();
+    } else if (!loading && !isAuthenticated()) {
+      // Clear cart when user logs out
+      setCartItems({});
+    }
+  }, [loading, isAuthenticated]);
 
   const value = {
     products,

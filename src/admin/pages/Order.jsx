@@ -1,27 +1,25 @@
-import { useEffect } from "react";
-import { useState } from "react";
-import axios from "axios";
+import { useEffect, useState } from "react";
+import axiosInstance from "../../api/axiosInstance";
 import { toast } from "react-toastify";
-import { backendUrl, currency } from "../App";
 import { assets } from "../assets/assets";
+import { currency } from "../App";
 
-const Order = ({ token }) => {
+const Order = () => {
   const [orders, setOrders] = useState([]);
 
   const fetchAllOrders = async () => {
-    if (!token) {
-      return null;
-    }
-
     try {
-      const res = await axios.post(
-        backendUrl + "/api/order/list",
-        {},
-        { headers: { token } }
-      );
-
+      // Use the correct orders endpoint, not cart
+      const res = await axiosInstance.get("/api/order/list");
+      console.log("Admin orders response:", res.data); // Debug log
       if (res.data.success) {
-        setOrders(res.data.orders.reverse());
+        const ordersArray = res.data.orders || [];
+        if (Array.isArray(ordersArray)) {
+          setOrders(ordersArray.reverse());
+        } else {
+          console.warn("Orders data is not an array:", ordersArray);
+          setOrders([]);
+        }
       } else {
         toast.error(res.data.message);
       }
@@ -33,11 +31,10 @@ const Order = ({ token }) => {
 
   const statusHandler = async (e, orderId) => {
     try {
-      const res = await axios.post(
-        backendUrl + "/api/order/status",
-        { orderId, status: e.target.value },
-        { headers: { token } }
-      );
+      const res = await axiosInstance.put("/api/order/status", {
+        orderId,
+        status: e.target.value,
+      });
 
       if (res.data.success) {
         await fetchAllOrders();
@@ -51,7 +48,7 @@ const Order = ({ token }) => {
 
   useEffect(() => {
     fetchAllOrders();
-  }, [token]);
+  }, []);
 
   return (
     <div>

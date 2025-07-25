@@ -161,9 +161,7 @@ const Profile = () => {
       )
     ) {
       try {
-        const response = await axios.delete(`${backendUrl}/api/user/account`, {
-          headers: { token },
-        });
+        const response = await deleteUserAccount();
 
         if (response.data.success) {
           toast.success("Account deleted successfully");

@@ -2,23 +2,19 @@ import { Link, NavLink } from "react-router-dom";
 import { assets } from "../assets/assets";
 import { useContext, useState } from "react";
 import { ShopContext } from "../context/ShopContext";
+import { useAuth } from "../context/AuthContext";
 
 const Navbar = () => {
   const [visible, setVisible] = useState(false);
 
-  const {
-    setShowSearch,
-    getCartCount,
-    navigate,
-    token,
-    setToken,
-    setCartItems,
-  } = useContext(ShopContext);
+  const { setShowSearch, getCartCount, navigate, setCartItems } =
+    useContext(ShopContext);
+
+  const { isAuthenticated, logout: authLogout } = useAuth();
 
   const logout = () => {
+    authLogout();
     navigate("/login");
-    localStorage.removeItem("token");
-    setToken("");
     setCartItems({});
   };
 
@@ -60,10 +56,10 @@ const Navbar = () => {
             src={assets.profile_icon}
             className="w-5 cursor-pointer"
             alt=""
-            onClick={() => (token ? null : navigate("/login"))}
+            onClick={() => (isAuthenticated() ? null : navigate("/login"))}
           />
           {/* DROPDOWN */}
-          {token && (
+          {isAuthenticated() && (
             <div className="group-hover:block hidden absolute dropdown-menu right-0 pt-4 ">
               <div className="flex flex-col gap-2 w-36 py-3 px-5 bg-slate-100 text-gray-500 rounded">
                 <p

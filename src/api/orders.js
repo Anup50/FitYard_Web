@@ -21,3 +21,19 @@ export const getAllOrders = () => axiosInstance.get("/api/order/list");
 // Track order
 export const trackOrder = (orderId) =>
   axiosInstance.get(`/api/order/track/${orderId}`);
+
+// Place order with Cash on Delivery
+export const placeCODOrder = (orderData) =>
+  axiosInstance.post("/api/order/place", orderData);
+
+// Place order with Stripe
+export const placeStripeOrder = (orderData) =>
+  axiosInstance.post("/api/order/stripe", orderData);
+
+// Place order with Razorpay
+export const placeRazorpayOrder = (orderData) =>
+  axiosInstance.post("/api/order/razorpay", orderData);
+
+// Verify Razorpay payment
+export const verifyRazorpayPayment = (paymentData) =>
+  axiosInstance.post("/api/order/verifyRazorpay", paymentData);

@@ -23,8 +23,8 @@ const Login = () => {
   const onSubmitHandler = async (e) => {
     e.preventDefault();
 
-    // Check CAPTCHA
-    if (!captchaValue) {
+    // Only check CAPTCHA for login, not for signup
+    if (currentState === "Login" && !captchaValue) {
       toast.error("Please complete the CAPTCHA verification");
       return;
     }
@@ -35,21 +35,14 @@ const Login = () => {
           name,
           email,
           password,
-          captcha: captchaValue,
         });
         if (res.data.success) {
           // Always show OTP page after successful registration
           setShowOTP(true);
           setPendingRegistration({ name, email, password });
           toast.success("OTP sent to your email!");
-          // Reset captcha
-          setCaptchaValue(null);
-          captchaRef.current?.reset();
         } else {
           toast.error(res.data.message);
-          // Reset captcha on error
-          setCaptchaValue(null);
-          captchaRef.current?.reset();
         }
       } else {
         const result = await login(email, password, false, captchaValue);
@@ -66,9 +59,20 @@ const Login = () => {
     } catch (error) {
       console.log(error);
       toast.error(error.response?.data?.message || error.message);
-      // Reset captcha on error
-      setCaptchaValue(null);
-      captchaRef.current?.reset();
+      // Reset captcha on error only for login
+      if (currentState === "Login") {
+        setCaptchaValue(null);
+        captchaRef.current?.reset();
+      }
+    }
+  };
+
+  const handleModeSwitch = (mode) => {
+    setCurrentState(mode);
+    // Reset captcha when switching modes
+    setCaptchaValue(null);
+    if (captchaRef.current) {
+      captchaRef.current.reset();
     }
   };
 
@@ -168,28 +172,30 @@ const Login = () => {
         <PasswordStrengthBar password={password} />
       )}
 
-      {/* reCAPTCHA */}
-      <div className="w-full flex justify-center">
-        <ReCAPTCHA
-          ref={captchaRef}
-          sitekey={import.meta.env.VITE_RECAPTCHA_SITE_KEY}
-          onChange={(value) => setCaptchaValue(value)}
-          onExpired={() => setCaptchaValue(null)}
-        />
-      </div>
+      {/* reCAPTCHA - Only show for login */}
+      {currentState === "Login" && (
+        <div className="w-full flex justify-center">
+          <ReCAPTCHA
+            ref={captchaRef}
+            sitekey={import.meta.env.VITE_RECAPTCHA_SITE_KEY}
+            onChange={(value) => setCaptchaValue(value)}
+            onExpired={() => setCaptchaValue(null)}
+          />
+        </div>
+      )}
 
       <div className="w-full flex justify-between text-sm mt-[-8px]">
         <p className="cursor-pointer">Forgot your password?</p>
         {currentState === "Login" ? (
           <p
-            onClick={() => setCurrentState("Sign Up")}
+            onClick={() => handleModeSwitch("Sign Up")}
             className="cursor-pointer"
           >
             Create account
           </p>
         ) : (
           <p
-            onClick={() => setCurrentState("Login")}
+            onClick={() => handleModeSwitch("Login")}
             className="cursor-pointer"
           >
             Login Here{" "}

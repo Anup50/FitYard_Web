@@ -8,5 +8,6 @@ export const addProduct = async (formData, token) => {
 
 export const fetchProducts = () => axiosInstance.get("/api/product/list");
 export const removeProduct = (id) =>
-  axiosInstance.post("/api/product/remove", { id });
-export const getProduct = (id) => axiosInstance.get(`/api/product/${id}`);
+  axiosInstance.delete(`/api/product/remove/${id}`);
+export const fetchSingleProduct = (id) =>
+  axiosInstance.get(`/api/product/single/${id}`);

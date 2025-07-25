@@ -25,15 +25,25 @@ export const AuthProvider = ({ children }) => {
   // Check authentication status on app load
   useEffect(() => {
     const checkAuth = async () => {
+      console.log("AuthContext - Starting auth check...");
       try {
         const response = await getUserProfile();
+        console.log("AuthContext - getUserProfile response:", response.data);
         if (response.data.success) {
+          console.log(
+            "AuthContext - Setting user from auth check:",
+            response.data.user
+          );
           setUser(response.data.user);
+        } else {
+          console.log("AuthContext - Auth check failed, no user data");
+          setUser(null);
         }
       } catch (error) {
         console.error("Auth check failed:", error);
         setUser(null);
       }
+      console.log("AuthContext - Setting loading to false");
       setLoading(false);
     };
 
@@ -54,7 +64,13 @@ export const AuthProvider = ({ children }) => {
       if (response.data.success) {
         const { user: userData } = response.data;
         console.log("AuthContext login response:", response.data);
-        console.log("User data:", userData);
+        console.log("Extracted user data:", userData);
+
+        if (!userData) {
+          console.error(
+            "User data is undefined or null. Check server response."
+          );
+        }
 
         setUser(userData);
         return { success: true, user: userData };
@@ -65,6 +81,7 @@ export const AuthProvider = ({ children }) => {
         };
       }
     } catch (error) {
+      console.error("Login error:", error);
       return {
         success: false,
         message: error.response?.data?.message || "Login failed",
