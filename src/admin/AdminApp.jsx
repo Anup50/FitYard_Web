@@ -61,13 +61,13 @@ export const backendUrl = import.meta.env.VITE_BACKEND_URL;
 export const currency = "$";
 
 const AdminApp = () => {
-  const { user, logout } = useAuth();
+  const { user, adminLogout } = useAuth();
 
   // Admin is authenticated (handled by AdminRoute), show admin dashboard
   return (
     <div className="bg-gray-50 min-h-screen">
       <ToastContainer />
-      <Navbar setToken={logout} />
+      <Navbar setToken={adminLogout} />
       <hr />
       <div className="flex w-full">
         <SideBar />

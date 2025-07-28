@@ -4,10 +4,18 @@ import { ShopContext } from "../context/ShopContext";
 import { toast } from "react-toastify";
 import {
   verifyOTP as verifyOTPApi,
-  resendOTP as resendOTPApi,
+  verifyLoginOTP as verifyLoginOTPApi,
+  resendRegistrationOTP as resendRegistrationOTPApi,
+  resendLoginOTP as resendLoginOTPApi,
 } from "../api/auth";
 
-const OTPVerification = ({ email, onVerifySuccess, onResendOTP, onBack }) => {
+const OTPVerification = ({
+  email,
+  onVerifySuccess,
+  onResendOTP,
+  onBack,
+  isLogin = false,
+}) => {
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
   const [loading, setLoading] = useState(false);
   const [resendLoading, setResendLoading] = useState(false);
@@ -82,7 +90,9 @@ const OTPVerification = ({ email, onVerifySuccess, onResendOTP, onBack }) => {
 
     setLoading(true);
     try {
-      const response = await verifyOTPApi({
+      // Use appropriate API based on whether it's login or registration
+      const apiFunction = isLogin ? verifyLoginOTPApi : verifyOTPApi;
+      const response = await apiFunction({
         email,
         otp: otpCode,
       });
@@ -105,7 +115,18 @@ const OTPVerification = ({ email, onVerifySuccess, onResendOTP, onBack }) => {
   const handleResendOTP = async () => {
     setResendLoading(true);
     try {
-      const response = await resendOTPApi({
+      // Use appropriate API based on whether it's login or registration
+      console.log("OTP Resend Debug:", { isLogin, email });
+      const resendApiFunction = isLogin
+        ? resendLoginOTPApi
+        : resendRegistrationOTPApi;
+
+      console.log(
+        "Using resend function:",
+        isLogin ? "resendLoginOTPApi" : "resendRegistrationOTPApi"
+      );
+
+      const response = await resendApiFunction({
         email,
       });
 
