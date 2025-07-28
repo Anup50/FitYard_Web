@@ -27,25 +27,17 @@ export const AuthProvider = ({ children }) => {
   // Check authentication status on app load
   useEffect(() => {
     const checkAuth = async () => {
-      console.log("AuthContext - Starting auth check...");
       try {
         const response = await getUserProfile();
-        console.log("AuthContext - getUserProfile response:", response.data);
         if (response.data.success) {
-          console.log(
-            "AuthContext - Setting user from auth check:",
-            response.data.user
-          );
           setUser(response.data.user);
         } else {
-          console.log("AuthContext - Auth check failed, no user data");
           setUser(null);
         }
       } catch (error) {
         console.error("Auth check failed:", error);
         setUser(null);
       }
-      console.log("AuthContext - Setting loading to false");
       setLoading(false);
     };
 
@@ -76,8 +68,6 @@ export const AuthProvider = ({ children }) => {
 
         // Normal login without OTP
         const { user: userData } = response.data;
-        console.log("AuthContext login response:", response.data);
-        console.log("Extracted user data:", userData);
 
         if (!userData) {
           console.error(
@@ -132,18 +122,11 @@ export const AuthProvider = ({ children }) => {
 
   const isAuthenticated = () => {
     const authenticated = !!user;
-    console.log(
-      "isAuthenticated check - user:",
-      user,
-      "result:",
-      authenticated
-    );
     return authenticated;
   };
 
   const isAdmin = () => {
     const admin = user?.role === "admin";
-    console.log("isAdmin check - user role:", user?.role, "result:", admin);
     return admin;
   };
 

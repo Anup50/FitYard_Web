@@ -135,7 +135,7 @@ const OTPVerification = ({
         setTimeLeft(300); // Reset timer
         setOtp(["", "", "", "", "", ""]); // Clear current OTP
         inputRefs.current[0]?.focus(); // Focus first input
-        onResendOTP && onResendOTP();
+        // onResendOTP callback removed since we handle the API call here
       } else {
         toast.error(response.data.message);
       }

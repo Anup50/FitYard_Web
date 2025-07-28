@@ -112,7 +112,7 @@ const Login = () => {
     }
   };
 
-  // Handle OTP resend
+  // Handle OTP resend (fallback - normally handled by OTPVerification component)
   const handleOTPResend = async () => {
     try {
       const res = await resendRegistrationOTP({
