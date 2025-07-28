@@ -6,7 +6,9 @@ import {
   login as loginApi,
   logout as logoutApi,
   adminLogin,
+  adminLogout,
 } from "../api/auth";
+import { toast } from "react-toastify";
 
 const AuthContext = createContext();
 
@@ -62,6 +64,17 @@ export const AuthProvider = ({ children }) => {
         : await loginApi(loginData);
 
       if (response.data.success) {
+        // Check if OTP verification is required
+        if (response.data.requiresOtp) {
+          return {
+            success: true,
+            requiresOtp: true,
+            message: response.data.message || "OTP sent to your email",
+            email: email, // Pass email for OTP verification
+          };
+        }
+
+        // Normal login without OTP
         const { user: userData } = response.data;
         console.log("AuthContext login response:", response.data);
         console.log("Extracted user data:", userData);
@@ -92,10 +105,29 @@ export const AuthProvider = ({ children }) => {
   const logout = async () => {
     try {
       await logoutApi(); // Call backend to clear session cookie
+      toast.success("Logged out successfully!");
     } catch (error) {
       console.error("Logout error:", error);
+      toast.error("Logout failed. Please try again.");
     }
     setUser(null);
+  };
+
+  const adminLogoutHandler = async () => {
+    try {
+      await adminLogout(); // Call backend to clear admin session
+      toast.success("Admin logged out successfully!");
+    } catch (error) {
+      console.error("Admin logout error:", error);
+      toast.error("Admin logout failed. Please try again.");
+    }
+    setUser(null);
+  };
+
+  const completeLoginAfterOTP = async (userData) => {
+    // Set user data after successful OTP verification for login
+    setUser(userData);
+    return { success: true, user: userData };
   };
 
   const isAuthenticated = () => {
@@ -120,6 +152,8 @@ export const AuthProvider = ({ children }) => {
     loading,
     login,
     logout,
+    adminLogout: adminLogoutHandler,
+    completeLoginAfterOTP,
     isAuthenticated,
     isAdmin,
   };

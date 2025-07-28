@@ -13,6 +13,7 @@ import Login from "./pages/Login";
 import PlaceOrder from "./pages/PlaceOrder";
 import Orders from "./pages/Orders";
 import Profile from "./pages/Profile";
+
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import Verify from "./pages/Verify";
@@ -59,6 +60,7 @@ const CustomerApp = () => {
         <Route path="/collection" element={<Collection />} />
         <Route path="/about" element={<About />} />
         <Route path="/contact" element={<Contact />} />
+
         <Route path="/product/:productId" element={<Product />} />
         <Route path="/cart" element={<Cart />} />
         <Route path="/login" element={<Login />} />
