@@ -18,23 +18,24 @@ const About = () => {
         />
         <div className="flex flex-col justify-center gap-6 md:w-2/4 text-gray-600">
           <p>
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolor
-            quidem culpa sapiente necessitatibus similique, quaerat nisi fugiat
-            at officiis tempora laboriosam ipsam iusto? Veritatis illum ipsum
-            nihil delectus deserunt voluptates, officia nemo nulla aspernatur
-            laboriosam.
+            Welcome to FitYard, your ultimate destination for premium fitness apparel and activewear. 
+            Founded with a passion for fitness and fashion, we believe that the right workout gear can 
+            transform not just your appearance, but your entire fitness journey. Our carefully curated 
+            collection features high-performance athletic wear designed to move with you, whether you're 
+            hitting the gym, running outdoors, or practicing yoga.
           </p>
           <p>
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Soluta a
-            doloremque vitae consectetur, quas earum voluptatum nobis itaque
-            veritatis, ut ipsam eius sed ab fugiat.
+            At FitYard, we understand that fitness is a lifestyle, not just a hobby. That's why we've 
+            partnered with leading brands and emerging designers to bring you innovative fabrics, 
+            cutting-edge designs, and uncompromising quality that supports your active lifestyle 
+            every step of the way.
           </p>
 
           <b className="text-gray-800">Our Mission</b>
           <p>
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Suscipit
-            eius officia fugit sequi libero possimus temporibus commodi
-            doloremque omnis saepe.
+            To empower every individual on their fitness journey by providing premium, comfortable, 
+            and stylish activewear that enhances performance and boosts confidence. We're committed 
+            to helping you look good, feel great, and achieve your fitness goals.
           </p>
         </div>
       </div>
@@ -45,24 +46,24 @@ const About = () => {
 
       <div className="flex flex-col md:flex-row text-sm mb-20">
         <div className="border px-10 md:px-16 py-8 sm:py-20 flex flex-col gap-5">
-          <b>Quality Assurance:</b>
+          <b>Premium Quality:</b>
           <p className="text-gray-600">
-            We meticulously select and vet each product to ensure it meets our
-            stringent quality standard.
+            We carefully select high-performance fabrics and partner with trusted manufacturers 
+            to ensure every piece meets our rigorous standards for durability, comfort, and style.
           </p>
         </div>
         <div className="border px-10 md:px-16 py-8 sm:py-20 flex flex-col gap-5">
-          <b>Convenience:</b>
+          <b>Perfect Fit Guarantee:</b>
           <p className="text-gray-600">
-            With our user-friendly interface and hassle-free ordering process,
-            shopping fas never been easier.
+            Our comprehensive size guides and flexible return policy ensure you find the perfect fit 
+            for your body type and workout style, making online shopping confident and convenient.
           </p>
         </div>
         <div className="border px-10 md:px-16 py-8 sm:py-20 flex flex-col gap-5">
-          <b>Exceptional Customer Service:</b>
+          <b>Fitness Community Support:</b>
           <p className="text-gray-600">
-            Our team of dedicated professionals is here to assist you the way,
-            ensuring your satisfaction is our top priority
+            Beyond just selling activewear, we're committed to supporting your fitness journey with 
+            expert advice, workout tips, and a community of fitness enthusiasts who share your passion.
           </p>
         </div>
       </div>

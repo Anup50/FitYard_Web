@@ -13,9 +13,8 @@ const Footer = () => {
           />
 
           <p className="w-full md:w-2/3 text-gray-600">
-            Lorem ipsum dolor sit amet consectetur, adipisicing elit. Quam
-            itaque distinctio et quas? Voluptatum in sit architecto repellendus
-            similique fugit.
+            FitYard is your premier destination for high-quality activewear and fitness apparel. 
+            We're dedicated to helping you achieve your fitness goals with style, comfort, and confidence.
           </p>
         </div>
 
