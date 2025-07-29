@@ -36,7 +36,8 @@ const NewsletterBox = () => {
         Subscribe now & get 20% off
       </p>
       <p className="text-gray-400 mt-3">
-        Lorem ipsum, dolor sit amet consectetur adipisicing elit. Iure, quos!
+        Stay updated with our latest fitness wear collections, exclusive deals,
+        and workout tips!
       </p>
 
       <form

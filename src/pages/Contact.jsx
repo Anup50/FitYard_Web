@@ -23,10 +23,10 @@ const Contact = () => {
           </p>
           <p className="text-gray-500">
             {" "}
-            Tel: (415) 666-0132 <br /> Email: admin@forever.com{" "}
+            Tel: (415) 666-0132 <br /> Email: admin@fityard.com{" "}
           </p>
           <p className="font-semibold text-xl text-gray-600">
-            Careers at Forever
+            Careers at FitYard
           </p>
           <p className="text-gray-500">
             Learn more about our teams and job openings.

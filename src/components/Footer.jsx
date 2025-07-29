@@ -9,7 +9,7 @@ const Footer = () => {
           <img
             src={sanitizeURL(assets.logo)}
             className="mb-5 w-24"
-            alt={sanitizeText("Forever Logo")}
+            alt={sanitizeText("FitYard Logo")}
           />
 
           <p className="w-full md:w-2/3 text-gray-600">
@@ -33,7 +33,7 @@ const Footer = () => {
           <p className="text-xl font-medium mb-5">GET IN TOUCH</p>
           <ul className="flex flex-col gap-1 text-gray-600">
             <li>+1-212-521-4569</li>
-            <li>contact@foreveryou.com</li>
+            <li>contact@fityard.com</li>
           </ul>
         </div>
       </div>
@@ -41,7 +41,7 @@ const Footer = () => {
       <div>
         <hr />
         <p className="py-5 text-sm text-center">
-          Copyright 2024@ forever.com - All Right Reserved.
+          Copyright 2024@ fityard.com - All Right Reserved.
         </p>
       </div>
     </div>

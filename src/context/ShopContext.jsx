@@ -90,7 +90,7 @@ const ShopContextProvider = (props) => {
     setCartItems(cartData);
 
     try {
-      await updateCart(itemId, size, quantity);
+      await updateCart({ itemId, size, quantity });
     } catch (e) {
       console.log(e);
       toast.error(e.message);

@@ -127,18 +127,19 @@ const Product = () => {
         </div>
         <div className="flex flex-col gap-4 border px-6 py-6 text-sm text-gray-500">
           <p>
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Repudiandae
-            dolor, consequuntur totam nostrum praesentium distinctio accusamus
-            assumenda architecto alias veritatis autem. Non facilis alias
-            quaerat quasi cumque nisi. Suscipit cupiditate perspiciatis
-            laudantium error quibusdam facere, praesentium delectus cum rerum
-            tempore laboriosam temporibus. Id voluptatibus quia, optio provident
-            nesciunt debitis. Harum!
+            Experience the perfect blend of comfort and performance with our
+            premium activewear. Crafted from high-quality, moisture-wicking
+            fabrics that move with your body during any workout. Our innovative
+            designs feature strategic ventilation zones, flatlock seams to
+            prevent chafing, and a four-way stretch fabric that maintains its
+            shape after countless washes. Whether you're hitting the gym, going
+            for a run, or practicing yoga, this piece delivers the support and
+            flexibility you need to perform at your best.
           </p>
           <p>
-            Lorem ipsum dolor sit, amet consectetur adipisicing elit. Qui quos
-            deleniti corrupti dolore commodi deserunt, dicta ipsam ex nemo
-            animi.
+            Machine washable and built to last, our fitness apparel is designed
+            for the active lifestyle. Available in multiple sizes and colors to
+            suit your personal style and training preferences.
           </p>
         </div>
       </div>
