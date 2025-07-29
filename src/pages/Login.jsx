@@ -5,7 +5,6 @@ import { toast } from "react-toastify";
 import ReCAPTCHA from "react-google-recaptcha";
 import OTPVerification from "./OTPVerification";
 import PasswordStrengthBar from "../components/PasswordStrengthBar";
-import CSRFDebug from "../components/CSRFDebug";
 import { register, resendRegistrationOTP } from "../api/auth";
 import { sanitizeFormData } from "../utils/sanitizer";
 
@@ -257,7 +256,6 @@ const Login = () => {
           {currentState === "Login" ? "Sign In" : "Sign Up"}
         </button>
       </form>
-      <CSRFDebug />
     </>
   );
 };
