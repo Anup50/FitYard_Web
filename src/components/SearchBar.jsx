@@ -27,7 +27,7 @@ const SearchBar = () => {
           placeholder="Search"
           className="flex-1 outline-none bg-inherit text-sm"
           value={search}
-          onChange={(e) => setSearch(sanitizeText(e.target.value))}
+          onChange={(e) => setSearch(e.target.value)}
         />
 
         <img

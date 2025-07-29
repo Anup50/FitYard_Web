@@ -3,6 +3,7 @@ import { ShopContext } from "../context/ShopContext";
 import { assets } from "../assets/assets";
 import Title from "../components/Title";
 import ProductItem from "../components/ProductItem";
+import { sanitizeText } from "../utils/sanitizer";
 
 const Collection = () => {
   const { products, search, showSearch } = useContext(ShopContext);
@@ -32,8 +33,9 @@ const Collection = () => {
     let productsCopy = products.slice();
 
     if (showSearch && search) {
+      const sanitizedSearch = sanitizeText(search);
       productsCopy = productsCopy.filter((item) =>
-        item.name.toLowerCase().includes(search.toLowerCase())
+        item.name.toLowerCase().includes(sanitizedSearch.toLowerCase())
       );
     }
 
