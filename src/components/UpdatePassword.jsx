@@ -9,6 +9,7 @@ import {
 } from "../utils/passwordValidation";
 import { useAuth } from "../context/AuthContext";
 import { sanitizeFormData } from "../utils/sanitizer";
+import EyeToggle from "./EyeToggle";
 
 const UpdatePassword = ({ onSuccess, className = "" }) => {
   const { user } = useAuth();
@@ -154,17 +155,14 @@ const UpdatePassword = ({ onSuccess, className = "" }) => {
               name="currentPassword"
               value={formData.currentPassword}
               onChange={handleInputChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-3 py-2 pr-10 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               required
               disabled={loading}
             />
-            <button
-              type="button"
-              onClick={() => togglePasswordVisibility("current")}
-              className="absolute inset-y-0 right-0 pr-3 flex items-center text-sm leading-5"
-            >
-              {showPasswords.current ? "🙈" : "👁️"}
-            </button>
+            <EyeToggle
+              showPassword={showPasswords.current}
+              toggleVisibility={() => togglePasswordVisibility("current")}
+            />
           </div>
         </div>
 
@@ -183,7 +181,7 @@ const UpdatePassword = ({ onSuccess, className = "" }) => {
               name="newPassword"
               value={formData.newPassword}
               onChange={handleInputChange}
-              className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+              className={`w-full px-3 py-2 pr-10 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
                 validation.newPassword.isValid
                   ? "border-gray-300"
                   : "border-red-300"
@@ -191,13 +189,10 @@ const UpdatePassword = ({ onSuccess, className = "" }) => {
               required
               disabled={loading}
             />
-            <button
-              type="button"
-              onClick={() => togglePasswordVisibility("new")}
-              className="absolute inset-y-0 right-0 pr-3 flex items-center text-sm leading-5"
-            >
-              {showPasswords.new ? "🙈" : "👁️"}
-            </button>
+            <EyeToggle
+              showPassword={showPasswords.new}
+              toggleVisibility={() => togglePasswordVisibility("new")}
+            />
           </div>
 
           {/* Password Strength Indicator */}
@@ -252,7 +247,7 @@ const UpdatePassword = ({ onSuccess, className = "" }) => {
               name="confirmPassword"
               value={formData.confirmPassword}
               onChange={handleInputChange}
-              className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+              className={`w-full px-3 py-2 pr-10 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
                 validation.confirmPassword.isValid
                   ? "border-gray-300"
                   : "border-red-300"
@@ -260,13 +255,10 @@ const UpdatePassword = ({ onSuccess, className = "" }) => {
               required
               disabled={loading}
             />
-            <button
-              type="button"
-              onClick={() => togglePasswordVisibility("confirm")}
-              className="absolute inset-y-0 right-0 pr-3 flex items-center text-sm leading-5"
-            >
-              {showPasswords.confirm ? "🙈" : "👁️"}
-            </button>
+            <EyeToggle
+              showPassword={showPasswords.confirm}
+              toggleVisibility={() => togglePasswordVisibility("confirm")}
+            />
           </div>
 
           {/* Confirmation Error */}

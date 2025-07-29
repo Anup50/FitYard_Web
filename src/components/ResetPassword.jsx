@@ -9,6 +9,7 @@ import {
   getStrengthPercentage,
 } from "../utils/passwordValidation";
 import { sanitizeFormData } from "../utils/sanitizer";
+import EyeToggle from "./EyeToggle";
 
 const ResetPassword = () => {
   const navigate = useNavigate();
@@ -231,7 +232,7 @@ const ResetPassword = () => {
                 name="newPassword"
                 value={formData.newPassword}
                 onChange={handleInputChange}
-                className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                className={`w-full px-3 py-2 pr-10 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
                   validation.newPassword.isValid
                     ? "border-gray-300"
                     : "border-red-300"
@@ -240,13 +241,10 @@ const ResetPassword = () => {
                 disabled={loading}
                 placeholder="Enter your new password"
               />
-              <button
-                type="button"
-                onClick={() => togglePasswordVisibility("new")}
-                className="absolute inset-y-0 right-0 pr-3 flex items-center text-sm leading-5"
-              >
-                {showPasswords.new ? "🙈" : "👁️"}
-              </button>
+              <EyeToggle
+                showPassword={showPasswords.new}
+                toggleVisibility={() => togglePasswordVisibility("new")}
+              />
             </div>
 
             {/* Password Strength Indicator */}
@@ -301,7 +299,7 @@ const ResetPassword = () => {
                 name="confirmPassword"
                 value={formData.confirmPassword}
                 onChange={handleInputChange}
-                className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                className={`w-full px-3 py-2 pr-10 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
                   validation.confirmPassword.isValid
                     ? "border-gray-300"
                     : "border-red-300"
@@ -310,13 +308,10 @@ const ResetPassword = () => {
                 disabled={loading}
                 placeholder="Confirm your new password"
               />
-              <button
-                type="button"
-                onClick={() => togglePasswordVisibility("confirm")}
-                className="absolute inset-y-0 right-0 pr-3 flex items-center text-sm leading-5"
-              >
-                {showPasswords.confirm ? "🙈" : "👁️"}
-              </button>
+              <EyeToggle
+                showPassword={showPasswords.confirm}
+                toggleVisibility={() => togglePasswordVisibility("confirm")}
+              />
             </div>
 
             {/* Confirmation Error */}

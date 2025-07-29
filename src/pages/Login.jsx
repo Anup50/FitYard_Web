@@ -5,6 +5,7 @@ import { toast } from "react-toastify";
 import ReCAPTCHA from "react-google-recaptcha";
 import OTPVerification from "./OTPVerification";
 import PasswordStrengthBar from "../components/PasswordStrengthBar";
+import EyeToggle from "../components/EyeToggle";
 import { register, resendRegistrationOTP } from "../api/auth";
 import { sanitizeFormData } from "../utils/sanitizer";
 
@@ -20,6 +21,7 @@ const Login = () => {
   const [name, setName] = useState("");
   const [password, setPassword] = useState("");
   const [email, setEmail] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
 
   const onSubmitHandler = async (e) => {
     e.preventDefault();
@@ -202,14 +204,20 @@ const Login = () => {
           onChange={(e) => setEmail(e.target.value)}
           value={email}
         />
-        <input
-          type="password"
-          className="w-full px-3 py-2 border border-gray-800"
-          placeholder="Password"
-          required
-          onChange={(e) => setPassword(e.target.value)}
-          value={password}
-        />
+        <div className="relative">
+          <input
+            type={showPassword ? "text" : "password"}
+            className="w-full px-3 py-2 pr-10 border border-gray-800"
+            placeholder="Password"
+            required
+            onChange={(e) => setPassword(e.target.value)}
+            value={password}
+          />
+          <EyeToggle
+            showPassword={showPassword}
+            toggleVisibility={() => setShowPassword(!showPassword)}
+          />
+        </div>
         {currentState === "Sign Up" && (
           <PasswordStrengthBar password={password} />
         )}

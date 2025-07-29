@@ -44,12 +44,14 @@ const PasswordStatus = ({ showDetails = true, className = "" }) => {
 
   if (error || !passwordStatus) {
     return showDetails ? (
-      <div className={`p-4 bg-yellow-50 border border-yellow-200 rounded-lg ${className}`}>
+      <div
+        className={`p-4 bg-yellow-50 border border-yellow-200 rounded-lg ${className}`}
+      >
         <div className="flex items-center">
-          <div className="w-5 h-5 text-yellow-500 mr-2">
-            ⚠️
-          </div>
-          <span className="text-sm text-yellow-800">Unable to check password status</span>
+          <div className="w-5 h-5 text-yellow-500 mr-2">⚠️</div>
+          <span className="text-sm text-yellow-800">
+            Unable to check password status
+          </span>
         </div>
       </div>
     ) : null;
@@ -73,7 +75,9 @@ const PasswordStatus = ({ showDetails = true, className = "" }) => {
         type: "error",
         icon: "❌",
         title: "Password Expired",
-        message: `Your password expired ${expiresAt ? `on ${formatDate(expiresAt)}` : "recently"}. Please update it immediately.`,
+        message: `Your password expired ${
+          expiresAt ? `on ${formatDate(expiresAt)}` : "recently"
+        }. Please update it immediately.`,
         bgColor: "bg-red-50",
         borderColor: "border-red-200",
         textColor: "text-red-800",
@@ -86,7 +90,9 @@ const PasswordStatus = ({ showDetails = true, className = "" }) => {
         type: "warning",
         icon: "⚠️",
         title: "Password Expiring Soon",
-        message: `Your password will expire in ${daysUntilExpiry} day${daysUntilExpiry !== 1 ? 's' : ''} ${expiresAt ? `on ${formatDate(expiresAt)}` : ""}.`,
+        message: `Your password will expire in ${daysUntilExpiry} day${
+          daysUntilExpiry !== 1 ? "s" : ""
+        } ${expiresAt ? `on ${formatDate(expiresAt)}` : ""}.`,
         bgColor: "bg-yellow-50",
         borderColor: "border-yellow-200",
         textColor: "text-yellow-800",
@@ -127,12 +133,18 @@ const PasswordStatus = ({ showDetails = true, className = "" }) => {
 
   // Minimal detailed view that matches project design
   return (
-    <div className={`p-4 ${statusInfo.bgColor} border ${statusInfo.borderColor} rounded-lg ${className}`}>
+    <div
+      className={`p-4 ${statusInfo.bgColor} border ${statusInfo.borderColor} rounded-lg ${className}`}
+    >
       <div className="flex items-start space-x-3">
         <span className="text-lg">{statusInfo.icon}</span>
         <div className="flex-1">
-          <h4 className={`font-medium ${statusInfo.textColor} mb-1`}>{statusInfo.title}</h4>
-          <p className={`text-sm ${statusInfo.textColor}`}>{statusInfo.message}</p>
+          <h4 className={`font-medium ${statusInfo.textColor} mb-1`}>
+            {statusInfo.title}
+          </h4>
+          <p className={`text-sm ${statusInfo.textColor}`}>
+            {statusInfo.message}
+          </p>
         </div>
       </div>
     </div>
