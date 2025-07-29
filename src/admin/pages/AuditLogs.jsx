@@ -392,21 +392,19 @@ const AuditLogs = () => {
 
       const response = await exportAuditLogs(cleanParams);
 
-      if (response.success) {
-        // Create and download the CSV file
-        const blob = new Blob([response.data], { type: "text/csv" });
-        const url = window.URL.createObjectURL(blob);
-        const link = document.createElement("a");
-        link.href = url;
-        link.download = `audit-logs-${
-          new Date().toISOString().split("T")[0]
-        }.csv`;
-        link.click();
-        window.URL.revokeObjectURL(url);
-        toast.success("Audit logs exported successfully");
-      } else {
-        toast.error("Failed to export audit logs");
-      }
+      // The response.data is already a blob from the API
+      const blob = response.data;
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `fityard-audit-logs-${
+        new Date().toISOString().split("T")[0]
+      }.csv`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+      toast.success("Audit logs exported successfully");
     } catch (error) {
       console.error("Error exporting logs:", error);
       toast.error("Error exporting audit logs");
@@ -443,17 +441,6 @@ const AuditLogs = () => {
         <p className="text-gray-600 mt-1">
           Monitor and review system activities and user actions
         </p>
-
-        {/* Debug Info */}
-        <div className="mt-2 p-3 bg-blue-50 border border-blue-200 rounded text-sm">
-          <strong>Debug Info:</strong> Backend URL:{" "}
-          {import.meta.env.VITE_BACKEND_URL || "Not set"} | Status:{" "}
-          {loading ? "Loading..." : "Ready"} | Logs Count: {logs.length} |
-          Pagination: {pagination.totalLogs} total | Current Filters:{" "}
-          {JSON.stringify(filters, null, 0).length > 100
-            ? "Many"
-            : JSON.stringify(filters)}
-        </div>
       </div>
 
       {/* Tabs */}
