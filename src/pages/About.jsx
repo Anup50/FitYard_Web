@@ -1,7 +1,7 @@
 import Title from "../components/Title";
-
 import { assets } from "../assets/assets";
 import NewsletterBox from "../components/NewsletterBox";
+import { sanitizeURL, sanitizeText } from "../utils/sanitizer";
 
 const About = () => {
   return (
@@ -12,9 +12,9 @@ const About = () => {
 
       <div className="my-10 flex flex-col md:flex-row gap-16">
         <img
-          src={assets.about_img}
+          src={sanitizeURL(assets.about_img)}
           className="w-full md:max-w-[450px]"
-          alt=""
+          alt={sanitizeText("About us image")}
         />
         <div className="flex flex-col justify-center gap-6 md:w-2/4 text-gray-600">
           <p>

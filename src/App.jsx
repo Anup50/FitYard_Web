@@ -19,6 +19,7 @@ import Footer from "./components/Footer";
 import Verify from "./pages/Verify";
 import SearchBar from "./components/SearchBar";
 import ProtectedRoute from "./components/ProtectedRoute";
+import SecurityTester from "./components/SecurityTester";
 
 // Admin Components
 import AdminApp from "./admin/AdminApp";
@@ -33,7 +34,6 @@ const App = () => {
         {/* Admin Login Route */}
         <Route path="/admin/login" element={<AdminLogin />} />
 
-        {/* Admin Routes - Protected */}
         <Route
           path="/admin/*"
           element={
@@ -60,10 +60,10 @@ const CustomerApp = () => {
         <Route path="/collection" element={<Collection />} />
         <Route path="/about" element={<About />} />
         <Route path="/contact" element={<Contact />} />
-
         <Route path="/product/:productId" element={<Product />} />
         <Route path="/cart" element={<Cart />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/security-test" element={<SecurityTester />} />
         <Route
           path="/place-order"
           element={

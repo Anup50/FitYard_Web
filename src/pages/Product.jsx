@@ -3,6 +3,8 @@ import { useParams } from "react-router-dom";
 import { ShopContext } from "../context/ShopContext";
 import { assets } from "../assets/assets";
 import RelatedProduct from "../components/RelatedProduct";
+import { sanitizeText, sanitizeURL } from "../utils/sanitizer";
+import SafeHTML from "../components/SafeHTML";
 
 const Product = () => {
   const { productId } = useParams();
@@ -36,37 +38,54 @@ const Product = () => {
           <div className="flex sm:flex-col overflow-x-auto sm:overflow-y-scroll justify-between sm:justify-normal sm:w-[18.7%] w-full">
             {productData.image.map((item, i) => (
               <img
-                src={item}
+                src={sanitizeURL(item)}
                 key={i}
                 className="w-[24%] sm:w-full sm:mb-3 flex-shrink-0 cursor-pointer"
-                alt=""
-                onClick={() => setImage(item)}
+                alt={`Product image ${i + 1}`}
+                onClick={() => setImage(sanitizeURL(item))}
+                onError={(e) => {
+                  e.target.src = "/placeholder-product.png"; // Fallback image
+                }}
               />
             ))}
           </div>
           <div className="w-full sm:w-[80%]">
-            <img src={image} className="w-full h-auto" alt="" />
+            <img
+              src={sanitizeURL(image)}
+              className="w-full h-auto"
+              alt={sanitizeText(productData.name)}
+              onError={(e) => {
+                e.target.src = "/placeholder-product.png"; // Fallback image
+              }}
+            />
           </div>
         </div>
 
         {/* PRODUCT INFO */}
         <div className="flex-1 ">
-          <h1 className="font-medium text-2xl my-2">{productData.name}</h1>
+          <h1 className="font-medium text-2xl my-2">
+            {sanitizeText(productData.name)}
+          </h1>
           <div className="flex items-center gap-1 mt-2">
-            <img className="w-3.5" src={assets.star_icon} alt="" />
-            <img className="w-3.5" src={assets.star_icon} alt="" />
-            <img className="w-3.5" src={assets.star_icon} alt="" />
-            <img className="w-3.5" src={assets.star_icon} alt="" />
-            <img className="w-3.5" src={assets.star_dull_icon} alt="" />
+            <img className="w-3.5" src={assets.star_icon} alt="star" />
+            <img className="w-3.5" src={assets.star_icon} alt="star" />
+            <img className="w-3.5" src={assets.star_icon} alt="star" />
+            <img className="w-3.5" src={assets.star_icon} alt="star" />
+            <img className="w-3.5" src={assets.star_dull_icon} alt="star" />
             <p className="pl-2">(122)</p>
           </div>
           <p className="mt-5 text-3xl font-medium">
             {currency}
-            {productData.price}
+            {sanitizeText(String(productData.price))}
           </p>
-          <p className="mt-5 text-gray-500 md:w-4/5">
-            {productData.description}
-          </p>
+          <SafeHTML
+            html={productData.description}
+            className="mt-5 text-gray-500 md:w-4/5"
+            sanitizeOptions={{
+              ALLOWED_TAGS: ["p", "br", "strong", "em", "b", "i"],
+              ALLOWED_ATTR: [],
+            }}
+          />
           <div className="flex flex-col gap-4 my-8">
             <p>Select Size</p>
             <div className="flex gap-2">
@@ -76,9 +95,9 @@ const Product = () => {
                     item === size ? "border-orange-500" : ""
                   }`}
                   key={i}
-                  onClick={() => setSize(item)}
+                  onClick={() => setSize(sanitizeText(item))}
                 >
-                  {item}
+                  {sanitizeText(item)}
                 </button>
               ))}
             </div>

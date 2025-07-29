@@ -3,6 +3,7 @@ import { ShopContext } from "../context/ShopContext";
 import Title from "../components/Title";
 import { assets } from "../assets/assets";
 import CartTotal from "../components/CartTotal";
+import { sanitizeURL, sanitizeText } from "../utils/sanitizer";
 
 const Cart = () => {
   const { products, currency, cartItems, updateQuantity, navigate } =
@@ -39,8 +40,8 @@ const Cart = () => {
         <div className="flex flex-col items-center justify-center py-20">
           <div className="text-center">
             <img
-              src={assets.cart_icon}
-              alt="Empty Cart"
+              src={sanitizeURL(assets.cart_icon)}
+              alt={sanitizeText("Empty Cart")}
               className="w-20 h-20 mx-auto mb-6 opacity-50"
             />
             <h3 className="text-2xl font-medium text-gray-800 mb-2">
@@ -73,21 +74,21 @@ const Cart = () => {
                 >
                   <div className="flex items-start gap-6">
                     <img
-                      src={productsData.image[0]}
+                      src={sanitizeURL(productsData.image[0])}
                       className="w-16 sm:w-20"
-                      alt=""
+                      alt={sanitizeText(productsData.name)}
                     />
                     <div>
                       <p className="text-xs sm:text-lg font-medium">
-                        {productsData.name}
+                        {sanitizeText(productsData.name)}
                       </p>
                       <div className="flex items-center gap-5 mt-2">
                         <p>
-                          {currency}
-                          {productsData.price}
+                          {sanitizeText(currency)}
+                          {sanitizeText(productsData.price.toString())}
                         </p>
                         <p className="px-2 sm:px-3 sm:py-1 border bg-stale-50">
-                          {item.size}
+                          {sanitizeText(item.size)}
                         </p>
                       </div>
                     </div>
@@ -109,9 +110,9 @@ const Cart = () => {
                     }
                   />
                   <img
-                    src={assets.bin_icon}
+                    src={sanitizeURL(assets.bin_icon)}
                     className="w-4 mr-4 sm:w-5 cursor-pointer"
-                    alt=""
+                    alt={sanitizeText("Remove item")}
                     onClick={() => updateQuantity(item._id, item.size, 0)}
                   />
                 </div>

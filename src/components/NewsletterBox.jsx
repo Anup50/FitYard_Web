@@ -1,7 +1,35 @@
+import { useState } from "react";
+import { sanitizeText } from "../utils/sanitizer";
+import { toast } from "react-toastify";
+
 const NewsletterBox = () => {
+  const [email, setEmail] = useState("");
+
   const onSubmitHandler = (e) => {
     e.preventDefault();
+
+    // Sanitize email input
+    const sanitizedEmail = sanitizeText(email.trim().toLowerCase());
+
+    // Basic email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(sanitizedEmail)) {
+      toast.error("Please enter a valid email address");
+      return;
+    }
+
+    // Here you would typically send the email to your backend
+    console.log("Newsletter subscription:", sanitizedEmail);
+    toast.success("Thank you for subscribing to our newsletter!");
+    setEmail(""); // Clear the form
   };
+
+  const handleEmailChange = (e) => {
+    // Sanitize input as user types
+    const sanitizedValue = sanitizeText(e.target.value);
+    setEmail(sanitizedValue);
+  };
+
   return (
     <div className="text-center">
       <p className="text-2xl font-medium text-gray-800">
@@ -19,6 +47,8 @@ const NewsletterBox = () => {
           type="email"
           placeholder="Enter your email."
           className="w-full sm:flex-1 outline-none"
+          value={email}
+          onChange={handleEmailChange}
           required
         />
         <button

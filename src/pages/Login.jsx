@@ -7,6 +7,7 @@ import OTPVerification from "./OTPVerification";
 import PasswordStrengthBar from "../components/PasswordStrengthBar";
 import CSRFDebug from "../components/CSRFDebug";
 import { register, resendRegistrationOTP } from "../api/auth";
+import { sanitizeFormData } from "../utils/sanitizer";
 
 const Login = () => {
   const { navigate } = useContext(ShopContext);
@@ -30,23 +31,40 @@ const Login = () => {
       return;
     }
 
+    // Sanitize form data before sending
+    const formData = sanitizeFormData({
+      name: name.trim(),
+      email: email.trim().toLowerCase(),
+      password: password, // Don't trim password as spaces might be intentional
+    });
+
     try {
       if (currentState === "Sign Up") {
         const res = await register({
-          name,
-          email,
-          password,
+          name: formData.name,
+          email: formData.email,
+          password: formData.password,
         });
         if (res.data.success) {
           // Always show OTP page after successful registration
           setShowOTP(true);
-          setPendingRegistration({ name, email, password, isLogin: false });
+          setPendingRegistration({
+            name: formData.name,
+            email: formData.email,
+            password: formData.password,
+            isLogin: false,
+          });
           toast.success("OTP sent to your email!");
         } else {
           toast.error(res.data.message);
         }
       } else {
-        const result = await login(email, password, false, captchaValue);
+        const result = await login(
+          formData.email,
+          formData.password,
+          false,
+          captchaValue
+        );
         if (result.success) {
           // Check if OTP verification is required
           if (result.requiresOtp) {

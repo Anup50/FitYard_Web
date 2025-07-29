@@ -2,6 +2,11 @@ import { useState } from "react";
 import { assets } from "../assets/assets";
 import { addProduct } from "../../api/products";
 import { toast } from "react-toastify";
+import {
+  sanitizeFormData,
+  sanitizeText,
+  sanitizeRichText,
+} from "../../utils/sanitizer";
 
 const Add = ({ token }) => {
   const [image1, setImage1] = useState(false);
@@ -49,13 +54,26 @@ const Add = ({ token }) => {
 
     try {
       setLoading(true);
+
+      // Sanitize form data before creating FormData
+      const sanitizedData = sanitizeFormData({
+        name: name.trim(),
+        description: description.trim(),
+        price: price.toString(),
+        category,
+        subCategory,
+      });
+
       const formData = new FormData();
 
-      formData.append("name", name);
-      formData.append("description", description);
-      formData.append("price", price);
-      formData.append("category", category);
-      formData.append("subCategory", subCategory);
+      formData.append("name", sanitizedData.name);
+      formData.append(
+        "description",
+        sanitizeRichText(sanitizedData.description)
+      );
+      formData.append("price", sanitizedData.price);
+      formData.append("category", sanitizedData.category);
+      formData.append("subCategory", sanitizedData.subCategory);
       formData.append("bestseller", bestseller);
       formData.append("sizes", JSON.stringify(sizes));
 

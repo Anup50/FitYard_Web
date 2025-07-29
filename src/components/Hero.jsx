@@ -1,5 +1,6 @@
 import React from "react";
 import { assets } from "../assets/assets";
+import { sanitizeURL, sanitizeText } from "../utils/sanitizer";
 
 const Hero = () => {
   return (
@@ -20,7 +21,11 @@ const Hero = () => {
         </div>
       </div>
       {/* HERO RiGHT SIDE */}
-      <img src={assets.hero_img} className="w-full sm:w-1/2" alt="" />{" "}
+      <img
+        src={sanitizeURL(assets.hero_img)}
+        className="w-full sm:w-1/2"
+        alt={sanitizeText("Latest arrivals hero banner")}
+      />{" "}
     </div>
   );
 };

@@ -11,6 +11,7 @@ import {
   placeRazorpayOrder,
   verifyRazorpayPayment,
 } from "../api/orders";
+import { sanitizeFormData, sanitizeURL } from "../utils/sanitizer";
 
 const PlaceOrder = () => {
   const {
@@ -41,7 +42,9 @@ const PlaceOrder = () => {
     const name = e.target.name;
     const value = e.target.value;
 
-    setFormData((p) => ({ ...p, [name]: value }));
+    // Sanitize form input
+    const sanitizedData = sanitizeFormData({ [name]: value });
+    setFormData((p) => ({ ...p, [name]: sanitizedData[name] }));
   };
 
   const onSubmitHandler = async (e) => {
@@ -74,7 +77,7 @@ const PlaceOrder = () => {
       }
 
       let orderData = {
-        address: formData,
+        address: sanitizeFormData(formData),
         items: orderItems,
         amount: getCartAmount() + delivery_fee,
       };

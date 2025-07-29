@@ -3,6 +3,7 @@ import { toast } from "react-toastify";
 import ReCAPTCHA from "react-google-recaptcha";
 import { useAuth } from "../../context/AuthContext";
 import { useNavigate, useLocation } from "react-router-dom";
+import { sanitizeFormData } from "../../utils/sanitizer";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -29,7 +30,7 @@ const Login = () => {
 
   const onSubmitHandler = async (e) => {
     e.preventDefault();
-    
+
     // Check CAPTCHA
     if (!captchaValue) {
       toast.error("Please complete the CAPTCHA verification");
@@ -40,7 +41,16 @@ const Login = () => {
 
     try {
       console.log("Attempting admin login...");
-      const result = await login(email, password, true, captchaValue); // true for admin login, with captcha
+
+      // Sanitize form data before sending
+      const sanitizedData = sanitizeFormData({ email, password });
+
+      const result = await login(
+        sanitizedData.email,
+        sanitizedData.password,
+        true,
+        captchaValue
+      ); // true for admin login, with captcha
       console.log("Login result:", result);
 
       if (result.success) {

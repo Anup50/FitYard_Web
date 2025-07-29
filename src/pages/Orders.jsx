@@ -4,6 +4,7 @@ import { useAuth } from "../context/AuthContext";
 import Title from "../components/Title";
 import { getUserOrders } from "../api/orders";
 import { toast } from "react-toastify";
+import { sanitizeURL, sanitizeText } from "../utils/sanitizer";
 
 const Orders = () => {
   const { backendUrl, currency } = useContext(ShopContext);
@@ -58,16 +59,22 @@ const Orders = () => {
             className="py-4 border-t border-b text-gray-700 flex flex-col md:flex-row md:items-center md:justify-between gap-4"
           >
             <div className="flex items-start gap-6 text-sm">
-              <img src={item.image[0]} className="w-16 sm:w-20" alt="" />
+              <img
+                src={sanitizeURL(item.image[0])}
+                className="w-16 sm:w-20"
+                alt={sanitizeText(item.name)}
+              />
               <div>
-                <p className="sm:text-base font-medium">{item.name}</p>
+                <p className="sm:text-base font-medium">
+                  {sanitizeText(item.name)}
+                </p>
                 <div className="flex items-center gap-3 mt-1 text-base text-gray-700">
                   <p>
-                    {currency}
-                    {item.price}
+                    {sanitizeText(currency)}
+                    {sanitizeText(item.price.toString())}
                   </p>
-                  <p>Quantity: {item.quantity}</p>
-                  <p>Size: {item.size}</p>
+                  <p>Quantity: {sanitizeText(item.quantity.toString())}</p>
+                  <p>Size: {sanitizeText(item.size)}</p>
                 </div>
                 <p className="mt-1">
                   Date:{" "}
@@ -77,7 +84,9 @@ const Orders = () => {
                 </p>
                 <p className="mt-1">
                   Payment:{" "}
-                  <span className="text-gray-400">{item.paymentMethod}</span>
+                  <span className="text-gray-400">
+                    {sanitizeText(item.paymentMethod)}
+                  </span>
                 </p>
               </div>
             </div>
@@ -85,7 +94,9 @@ const Orders = () => {
             <div className="md:w-1/2 flex justify-between">
               <div className="flex items-center gap-2">
                 <p className="min-w-2 h-2 rounded-full bg-green-500"></p>
-                <p className="text-sm md:text-base">{item.status}</p>
+                <p className="text-sm md:text-base">
+                  {sanitizeText(item.status)}
+                </p>
               </div>
               <button
                 onClick={loadOrderData}
