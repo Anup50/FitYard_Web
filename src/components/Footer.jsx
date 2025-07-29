@@ -8,7 +8,7 @@ const Footer = () => {
         <div>
           <img
             src={sanitizeURL(assets.logo)}
-            className="mb-5 w-32"
+            className="mb-5 w-24"
             alt={sanitizeText("Forever Logo")}
           />
 

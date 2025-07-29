@@ -24,7 +24,7 @@ const Navbar = () => {
       <Link to={"/"}>
         <img
           src={sanitizeURL(assets.logo)}
-          className="w-36"
+          className="w-24"
           alt={sanitizeText("Forever Logo")}
         />
       </Link>

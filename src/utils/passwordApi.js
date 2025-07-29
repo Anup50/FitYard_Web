@@ -21,7 +21,7 @@ export const updatePassword = async (userId, currentPassword, newPassword) => {
       currentPassword,
       newPassword,
     });
-    
+
     // Check if the response indicates failure even with 200 status
     if (response.data && !response.data.success) {
       throw {
@@ -30,7 +30,7 @@ export const updatePassword = async (userId, currentPassword, newPassword) => {
         data: response.data,
       };
     }
-    
+
     return response.data;
   } catch (error) {
     // Handle axios errors (4xx, 5xx status codes)
@@ -41,7 +41,7 @@ export const updatePassword = async (userId, currentPassword, newPassword) => {
         data: error.response.data,
       };
     }
-    
+
     // Handle our custom errors or network errors
     throw {
       message: error.message || "Failed to update password",
@@ -59,7 +59,7 @@ export const updatePassword = async (userId, currentPassword, newPassword) => {
 export const forgotPassword = async (email) => {
   try {
     const response = await api.post("/api/user/forgot-password", { email });
-    
+
     // Check if the response indicates failure even with 200 status
     if (response.data && !response.data.success) {
       throw {
@@ -68,7 +68,7 @@ export const forgotPassword = async (email) => {
         data: response.data,
       };
     }
-    
+
     return response.data;
   } catch (error) {
     // Handle axios errors (4xx, 5xx status codes)
@@ -79,7 +79,7 @@ export const forgotPassword = async (email) => {
         data: error.response.data,
       };
     }
-    
+
     // Handle our custom errors or network errors
     throw {
       message: error.message || "Failed to send reset email",
@@ -103,7 +103,7 @@ export const resetPassword = async (email, token, newPassword) => {
       token,
       newPassword,
     });
-    
+
     // Check if the response indicates failure even with 200 status
     if (response.data && !response.data.success) {
       throw {
@@ -112,7 +112,7 @@ export const resetPassword = async (email, token, newPassword) => {
         data: response.data,
       };
     }
-    
+
     return response.data;
   } catch (error) {
     // Handle axios errors (4xx, 5xx status codes)
@@ -123,7 +123,7 @@ export const resetPassword = async (email, token, newPassword) => {
         data: error.response.data,
       };
     }
-    
+
     // Handle our custom errors or network errors
     throw {
       message: error.message || "Failed to reset password",
