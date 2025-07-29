@@ -4,11 +4,11 @@ import { useAuth } from "../context/AuthContext";
 import { toast } from "react-toastify";
 import Title from "../components/Title";
 import { assets } from "../assets/assets";
-import PasswordStrengthBar from "../components/PasswordStrengthBar";
+import UpdatePassword from "../components/UpdatePassword";
+import PasswordStatus from "../components/PasswordStatus";
 import {
   getUserProfile,
   updateUserProfile,
-  changePassword,
   deleteUserAccount,
 } from "../api/user";
 import { getUserOrders } from "../api/orders";
@@ -37,13 +37,6 @@ const Profile = () => {
   const [activeTab, setActiveTab] = useState("profile");
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(false);
-
-  // Password change state
-  const [passwordData, setPasswordData] = useState({
-    currentPassword: "",
-    newPassword: "",
-    confirmPassword: "",
-  });
 
   // Order history state
   const [orders, setOrders] = useState([]);
@@ -108,46 +101,6 @@ const Profile = () => {
     } catch (error) {
       console.log(error);
       toast.error("Failed to update profile");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // Handle password change
-  const handlePasswordChange = async (e) => {
-    e.preventDefault();
-
-    if (passwordData.newPassword !== passwordData.confirmPassword) {
-      toast.error("New passwords don't match");
-      return;
-    }
-
-    if (passwordData.newPassword.length < 6) {
-      toast.error("Password must be at least 6 characters");
-      return;
-    }
-
-    setLoading(true);
-
-    try {
-      const response = await changePassword({
-        currentPassword: passwordData.currentPassword,
-        newPassword: passwordData.newPassword,
-      });
-
-      if (response.data.success) {
-        toast.success("Password changed successfully!");
-        setPasswordData({
-          currentPassword: "",
-          newPassword: "",
-          confirmPassword: "",
-        });
-      } else {
-        toast.error(response.data.message);
-      }
-    } catch (error) {
-      console.log(error);
-      toast.error("Failed to change password");
     } finally {
       setLoading(false);
     }
@@ -530,74 +483,23 @@ const Profile = () => {
 
       {/* Security Tab */}
       {activeTab === "security" && (
-        <div className="max-w-md">
-          <h3 className="text-lg font-medium mb-6">Change Password</h3>
-          <form onSubmit={handlePasswordChange} className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Current Password
-              </label>
-              <input
-                type="password"
-                value={passwordData.currentPassword}
-                onChange={(e) =>
-                  setPasswordData({
-                    ...passwordData,
-                    currentPassword: e.target.value,
-                  })
-                }
-                className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                required
-              />
-            </div>
+        <div className="max-w-2xl space-y-8">
+          {/* Password Status Section */}
+          <div>
+            <h3 className="text-lg font-medium mb-4">Account Security</h3>
+            <PasswordStatus userId={user?.id} variant="detailed" />
+          </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                New Password
-              </label>
-              <input
-                type="password"
-                value={passwordData.newPassword}
-                onChange={(e) =>
-                  setPasswordData({
-                    ...passwordData,
-                    newPassword: e.target.value,
-                  })
-                }
-                className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                required
-                minLength={6}
-              />
-              <PasswordStrengthBar password={passwordData.newPassword} />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Confirm New Password
-              </label>
-              <input
-                type="password"
-                value={passwordData.confirmPassword}
-                onChange={(e) =>
-                  setPasswordData({
-                    ...passwordData,
-                    confirmPassword: e.target.value,
-                  })
-                }
-                className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                required
-                minLength={6}
-              />
-            </div>
-
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full bg-black text-white py-2 text-sm hover:bg-gray-800 disabled:opacity-50"
-            >
-              {loading ? "Changing..." : "Change Password"}
-            </button>
-          </form>
+          {/* Password Update Section */}
+          <div>
+            <h3 className="text-lg font-medium mb-4">Change Password</h3>
+            <UpdatePassword
+              userId={user?.id}
+              onPasswordUpdated={() => {
+                toast.success("Password updated successfully!");
+              }}
+            />
+          </div>
         </div>
       )}
 

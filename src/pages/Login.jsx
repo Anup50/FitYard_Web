@@ -228,7 +228,14 @@ const Login = () => {
         )}
 
         <div className="w-full flex justify-between text-sm mt-[-8px]">
-          <p className="cursor-pointer">Forgot your password?</p>
+          {currentState === "Login" && (
+            <p
+              onClick={() => navigate("/forgot-password")}
+              className="cursor-pointer text-blue-600 hover:text-blue-800"
+            >
+              Forgot your password?
+            </p>
+          )}
           {currentState === "Login" ? (
             <p
               onClick={() => handleModeSwitch("Sign Up")}

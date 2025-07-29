@@ -1,6 +1,7 @@
 ﻿import { Route, Routes } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import "./styles/passwordComponents.css";
 
 // Customer Frontend Components
 import Home from "./pages/Home";
@@ -20,6 +21,8 @@ import Verify from "./pages/Verify";
 import SearchBar from "./components/SearchBar";
 import ProtectedRoute from "./components/ProtectedRoute";
 import SecurityTester from "./components/SecurityTester";
+import ForgotPassword from "./components/ForgotPassword";
+import ResetPassword from "./components/ResetPassword";
 
 // Admin Components
 import AdminApp from "./admin/AdminApp";
@@ -63,6 +66,8 @@ const CustomerApp = () => {
         <Route path="/product/:productId" element={<Product />} />
         <Route path="/cart" element={<Cart />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/security-test" element={<SecurityTester />} />
         <Route
           path="/place-order"
