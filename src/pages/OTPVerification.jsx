@@ -19,11 +19,9 @@ const OTPVerification = ({
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
   const [loading, setLoading] = useState(false);
   const [resendLoading, setResendLoading] = useState(false);
-  const [timeLeft, setTimeLeft] = useState(300); // 5 minutes in seconds
+  const [timeLeft, setTimeLeft] = useState(300);
   const inputRefs = useRef([]);
   const { backendUrl } = useContext(ShopContext);
-
-  // Timer effect
   useEffect(() => {
     if (timeLeft > 0) {
       const timer = setTimeout(() => setTimeLeft(timeLeft - 1), 1000);
@@ -31,35 +29,29 @@ const OTPVerification = ({
     }
   }, [timeLeft]);
 
-  // Format time display
   const formatTime = (seconds) => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
     return `${mins}:${secs.toString().padStart(2, "0")}`;
   };
-
-  // Handle OTP input change
   const handleOtpChange = (index, value) => {
-    if (value.length > 1) return; // Prevent multiple characters
+    if (value.length > 1) return;
 
     const newOtp = [...otp];
     newOtp[index] = value;
     setOtp(newOtp);
 
-    // Auto-focus next input
     if (value && index < 5) {
       inputRefs.current[index + 1]?.focus();
     }
   };
 
-  // Handle backspace
   const handleKeyDown = (index, e) => {
     if (e.key === "Backspace" && !otp[index] && index > 0) {
       inputRefs.current[index - 1]?.focus();
     }
   };
 
-  // Handle paste
   const handlePaste = (e) => {
     e.preventDefault();
     const pastedData = e.clipboardData.getData("text").slice(0, 6);
@@ -72,13 +64,11 @@ const OTPVerification = ({
     }
     setOtp(newOtp);
 
-    // Focus the next empty input or the last input
     const nextEmptyIndex = newOtp.findIndex((digit, idx) => !digit && idx < 6);
     const focusIndex = nextEmptyIndex !== -1 ? nextEmptyIndex : 5;
     inputRefs.current[focusIndex]?.focus();
   };
 
-  // Verify OTP
   const handleVerifyOTP = async (e) => {
     e.preventDefault();
     const otpCode = otp.join("");
@@ -90,7 +80,6 @@ const OTPVerification = ({
 
     setLoading(true);
     try {
-      // Use appropriate API based on whether it's login or registration
       const apiFunction = isLogin ? verifyLoginOTPApi : verifyOTPApi;
       const response = await apiFunction({
         email,
@@ -104,27 +93,25 @@ const OTPVerification = ({
         toast.error(response.data.message);
       }
     } catch (error) {
-      console.log(error);
+      // console.log(error);
       toast.error(error.response?.data?.message || "OTP verification failed");
     } finally {
       setLoading(false);
     }
   };
 
-  // Resend OTP
   const handleResendOTP = async () => {
     setResendLoading(true);
     try {
-      // Use appropriate API based on whether it's login or registration
-      console.log("OTP Resend Debug:", { isLogin, email });
+      // console.log("OTP Resend Debug:", { isLogin, email });
       const resendApiFunction = isLogin
         ? resendLoginOTPApi
         : resendRegistrationOTPApi;
 
-      console.log(
-        "Using resend function:",
-        isLogin ? "resendLoginOTPApi" : "resendRegistrationOTPApi"
-      );
+      // console.log(
+      //   "Using resend function:",
+      //   isLogin ? "resendLoginOTPApi" : "resendRegistrationOTPApi"
+      // );
 
       const response = await resendApiFunction({
         email,
@@ -132,15 +119,14 @@ const OTPVerification = ({
 
       if (response.data.success) {
         toast.success("New OTP sent to your email!");
-        setTimeLeft(300); // Reset timer
-        setOtp(["", "", "", "", "", ""]); // Clear current OTP
-        inputRefs.current[0]?.focus(); // Focus first input
-        // onResendOTP callback removed since we handle the API call here
+        setTimeLeft(300);
+        setOtp(["", "", "", "", "", ""]);
+        inputRefs.current[0]?.focus();
       } else {
         toast.error(response.data.message);
       }
     } catch (error) {
-      console.log(error);
+      // console.log(error);
       toast.error("Failed to resend OTP");
     } finally {
       setResendLoading(false);
@@ -213,7 +199,7 @@ const OTPVerification = ({
         <button
           type="button"
           onClick={handleResendOTP}
-          disabled={resendLoading || timeLeft > 240} // Allow resend after 1 minute
+          disabled={resendLoading || timeLeft > 240}
           className="text-sm font-medium text-gray-800 hover:text-black disabled:opacity-50 disabled:cursor-not-allowed underline transition-colors"
         >
           {resendLoading

@@ -1,22 +1,34 @@
 import axios from "axios";
 import { getCsrfToken, clearCsrfToken, refreshCsrfToken } from "./csrfService";
+import {
+  getStoredToken,
+  isTokenExpired,
+  validateToken,
+  removeToken,
+} from "../utils/jwtUtils";
 
 const axiosInstance = axios.create({
   baseURL: import.meta.env.VITE_BACKEND_URL,
-  withCredentials: true, // Send cookies with every request
+  withCredentials: true,
   timeout: 10000,
 });
 
-// Request interceptor to add CSRF token and JWT authentication
 axiosInstance.interceptors.request.use(
   async (config) => {
-    // Add JWT authentication token
-    const token = localStorage.getItem("token");
+    const token = getStoredToken();
     if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
+      const validation = validateToken(token);
+      if (validation.isValid && !isTokenExpired(token)) {
+        config.headers.Authorization = `Bearer ${token}`;
+      } else {
+        // console.log(
+        //   "Invalid or expired token detected, removing:",
+        //   validation.errors
+        // );
+        removeToken();
+      }
     }
 
-    // Only add CSRF token for state-changing operations
     if (
       ["post", "put", "patch", "delete"].includes(config.method?.toLowerCase())
     ) {
@@ -24,8 +36,7 @@ axiosInstance.interceptors.request.use(
         const csrfToken = await getCsrfToken();
         config.headers["X-CSRF-Token"] = csrfToken;
       } catch (error) {
-        console.error("Failed to get CSRF token:", error);
-        // Continue with request even if CSRF token fails
+        // console.error("Failed to get CSRF token:", error);
       }
     }
     return config;
@@ -35,7 +46,6 @@ axiosInstance.interceptors.request.use(
   }
 );
 
-// Response interceptor for error handling and CSRF token refresh
 axiosInstance.interceptors.response.use(
   (response) => {
     return response;
@@ -48,7 +58,6 @@ axiosInstance.interceptors.response.use(
       error.response?.data?.error === "CSRF_TOKEN_INVALID" &&
       !originalRequest._retry
     ) {
-      // CSRF token is invalid, try refreshing it once
       originalRequest._retry = true;
 
       try {
@@ -57,15 +66,26 @@ axiosInstance.interceptors.response.use(
         originalRequest.headers["X-CSRF-Token"] = newToken;
         return axiosInstance(originalRequest);
       } catch (refreshError) {
-        console.error("Failed to refresh CSRF token:", refreshError);
+        // console.error("Failed to refresh CSRF token:", refreshError);
         clearCsrfToken();
         return Promise.reject(error);
       }
     }
 
     if (error.response?.status === 401) {
-      // Session expired or invalid
+      if (
+        originalRequest.url?.includes("/update-password") ||
+        originalRequest.url?.includes("/change-password")
+      ) {
+        return Promise.reject(error);
+      }
+
+      // Session expired or invalid - clear both CSRF and JWT tokens
+      // console.log(
+      //   "401 Unauthorized - clearing tokens and redirecting to login"
+      // );
       clearCsrfToken();
+      removeToken();
       window.location.href = "/login";
     }
 

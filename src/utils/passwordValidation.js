@@ -1,8 +1,3 @@
-/**
- * Password validation utility
- * Provides client-side password strength validation
- */
-
 export const PASSWORD_REQUIREMENTS = {
   MIN_LENGTH: 8,
   MAX_LENGTH: 128,
@@ -36,7 +31,6 @@ export const validatePassword = (password) => {
     };
   }
 
-  // Length validation
   if (password.length < PASSWORD_REQUIREMENTS.MIN_LENGTH) {
     errors.push(
       `Password must be at least ${PASSWORD_REQUIREMENTS.MIN_LENGTH} characters long`
@@ -51,7 +45,6 @@ export const validatePassword = (password) => {
     );
   }
 
-  // Character type validation
   if (PASSWORD_REQUIREMENTS.REQUIRE_UPPERCASE && !/[A-Z]/.test(password)) {
     errors.push("Password must contain at least one uppercase letter");
   } else if (PASSWORD_REQUIREMENTS.REQUIRE_UPPERCASE) {
@@ -79,7 +72,6 @@ export const validatePassword = (password) => {
     score += 1;
   }
 
-  // Common password patterns
   if (password.toLowerCase().includes("password")) {
     errors.push('Password cannot contain the word "password"');
     score = Math.max(0, score - 1);
@@ -90,7 +82,6 @@ export const validatePassword = (password) => {
     score = 0;
   }
 
-  // Sequential characters
   if (
     /(?:abc|bcd|cde|def|efg|fgh|ghi|hij|ijk|jkl|klm|lmn|mno|nop|opq|pqr|qrs|rst|stu|tuv|uvw|vwx|wxy|xyz|123|234|345|456|567|678|789|890)/i.test(
       password
@@ -100,7 +91,6 @@ export const validatePassword = (password) => {
     score = Math.max(0, score - 1);
   }
 
-  // Determine strength
   let strength;
   if (score <= 2) {
     strength = PASSWORD_STRENGTH.WEAK;

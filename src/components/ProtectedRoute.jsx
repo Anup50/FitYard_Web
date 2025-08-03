@@ -1,5 +1,3 @@
-// Copy this file to: CW_1/frontend/src/components/ProtectedRoute.jsx
-
 import React from "react";
 import { Navigate, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
@@ -8,7 +6,6 @@ const ProtectedRoute = ({ children, requireAdmin = false }) => {
   const { isAuthenticated, isAdmin, loading, user } = useAuth();
   const location = useLocation();
 
-  // Show loading spinner while checking authentication
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -17,9 +14,10 @@ const ProtectedRoute = ({ children, requireAdmin = false }) => {
     );
   }
 
-  // Redirect to login if not authenticated
   if (!isAuthenticated()) {
-    console.log("ProtectedRoute redirecting to login - user:", user);
+    // console.log("ProtectedRoute redirecting to login - user:", user);
+    // console.log("ProtectedRoute - isAuthenticated():", isAuthenticated());
+    // console.log("ProtectedRoute - location:", location.pathname);
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 

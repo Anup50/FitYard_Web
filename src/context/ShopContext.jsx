@@ -29,7 +29,6 @@ const ShopContextProvider = (props) => {
       return;
     }
 
-    // Check if user is authenticated before adding to cart
     if (!isAuthenticated()) {
       toast.error("Please login to add items to cart");
       navigate("/login");
@@ -55,7 +54,6 @@ const ShopContextProvider = (props) => {
     try {
       await addToCartApi(itemId, size);
     } catch (e) {
-      console.log(e);
       toast.error(e.message);
     }
   };
@@ -76,7 +74,6 @@ const ShopContextProvider = (props) => {
   };
 
   const updateQuantity = async (itemId, size, quantity) => {
-    // Check if user is authenticated before updating cart
     if (!isAuthenticated()) {
       toast.error("Please login to update cart");
       navigate("/login");
@@ -92,7 +89,6 @@ const ShopContextProvider = (props) => {
     try {
       await updateCart({ itemId, size, quantity });
     } catch (e) {
-      console.log(e);
       toast.error(e.message);
     }
   };
@@ -124,8 +120,6 @@ const ShopContextProvider = (props) => {
         toast.error(response.data.message);
       }
     } catch (error) {
-      console.log(error);
-      // Don't show toast error for network issues on startup
       if (error.code !== "ERR_NETWORK") {
         toast.error(error.message);
       }
@@ -133,8 +127,7 @@ const ShopContextProvider = (props) => {
   };
 
   const getUserCart = async () => {
-    // Only fetch cart if user is authenticated
-    if (!isAuthenticated()) {
+    if (!isAuthenticated() || user?.role === "admin") {
       return;
     }
 
@@ -145,8 +138,6 @@ const ShopContextProvider = (props) => {
         setCartItems(res.data.cartData || {});
       }
     } catch (error) {
-      console.log("Cart error:", error);
-      // Don't show cart error if user is not logged in or if it's a CORS/network error
       if (error.response?.status !== 401 && error.code !== "ERR_NETWORK") {
         toast.error("Failed to load cart");
       }
@@ -157,15 +148,62 @@ const ShopContextProvider = (props) => {
     getProductsData();
   }, []);
 
-  // Load cart when user becomes authenticated
   useEffect(() => {
-    if (!loading && isAuthenticated()) {
+    if (!loading && isAuthenticated() && user?.role !== "admin") {
       getUserCart();
-    } else if (!loading && !isAuthenticated()) {
-      // Clear cart when user logs out
+    } else if (!loading && (!isAuthenticated() || user?.role === "admin")) {
       setCartItems({});
     }
-  }, [loading, isAuthenticated]);
+  }, [loading, isAuthenticated, user]);
+
+  useEffect(() => {
+    if (!loading && isAuthenticated() && user?.role !== "admin") {
+      const pendingPayment = localStorage.getItem("pendingPaymentSuccess");
+      if (pendingPayment) {
+        try {
+          const paymentData = JSON.parse(pendingPayment);
+
+          const thirtyMinutesAgo = Date.now() - 30 * 60 * 1000;
+
+          if (paymentData.success && paymentData.timestamp > thirtyMinutesAgo) {
+            setCartItems({});
+
+            toast.success(
+              <div>
+                <p>
+                  🎉 Order placed successfully! Thank you for your purchase.
+                </p>
+                <button
+                  onClick={() => {
+                    try {
+                      navigate("/orders");
+                    } catch (error) {
+                      toast.info(
+                        "Please click on 'My Orders' in the menu to view your orders."
+                      );
+                    }
+                  }}
+                  className="mt-2 px-3 py-1 bg-green-600 text-white rounded text-sm hover:bg-green-700"
+                >
+                  View Orders
+                </button>
+              </div>,
+              {
+                autoClose: 10000,
+                closeOnClick: false,
+              }
+            );
+
+            localStorage.removeItem("pendingPaymentSuccess");
+          } else {
+            localStorage.removeItem("pendingPaymentSuccess");
+          }
+        } catch (error) {
+          localStorage.removeItem("pendingPaymentSuccess");
+        }
+      }
+    }
+  }, [loading, isAuthenticated, user, navigate]);
 
   const value = {
     products,

@@ -54,7 +54,6 @@ import Add from "./pages/Add";
 import List from "./pages/List";
 import Order from "./pages/Order";
 import AuditLogs from "./pages/AuditLogs";
-import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useAuth } from "../context/AuthContext";
 
@@ -67,7 +66,6 @@ const AdminApp = () => {
   // Admin is authenticated (handled by AdminRoute), show admin dashboard
   return (
     <div className="bg-gray-50 min-h-screen">
-      <ToastContainer />
       <Navbar setToken={adminLogout} />
       <hr />
       <div className="flex w-full">

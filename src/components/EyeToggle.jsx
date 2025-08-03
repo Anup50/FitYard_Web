@@ -8,7 +8,6 @@ const EyeToggle = ({ showPassword, toggleVisibility, size = "w-5 h-5" }) => {
       className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 focus:outline-none"
     >
       {showPassword ? (
-        // Eye slash icon (hide password)
         <svg
           className={size}
           fill="none"
@@ -24,7 +23,6 @@ const EyeToggle = ({ showPassword, toggleVisibility, size = "w-5 h-5" }) => {
           />
         </svg>
       ) : (
-        // Eye icon (show password)
         <svg
           className={size}
           fill="none"

@@ -36,7 +36,6 @@ const Cart = () => {
       </div>
 
       {cartData.length === 0 ? (
-        // Empty cart state
         <div className="flex flex-col items-center justify-center py-20">
           <div className="text-center">
             <img
@@ -59,7 +58,6 @@ const Cart = () => {
           </div>
         </div>
       ) : (
-        // Cart with items
         <>
           <div>
             {cartData.map((item, i) => {

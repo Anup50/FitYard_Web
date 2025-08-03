@@ -9,22 +9,19 @@ const Order = () => {
 
   const fetchAllOrders = async () => {
     try {
-      // Use the correct orders endpoint, not cart
-      const res = await axiosInstance.get("/api/order/list");
-      console.log("Admin orders response:", res.data); // Debug log
+      const res = await axiosInstance.get("/api/order/all");
+      const ordersArray = res.data.orders || [];
       if (res.data.success) {
-        const ordersArray = res.data.orders || [];
         if (Array.isArray(ordersArray)) {
           setOrders(ordersArray.reverse());
         } else {
-          console.warn("Orders data is not an array:", ordersArray);
           setOrders([]);
         }
       } else {
         toast.error(res.data.message);
       }
     } catch (error) {
-      console.log(error);
+      // console.log(error)
       toast.error(error.message);
     }
   };
@@ -41,8 +38,7 @@ const Order = () => {
         toast.success(res.data.message);
       }
     } catch (error) {
-      console.log(error);
-      toast.error(error.message);
+      // console.log(error)      toast.error(error.message);
     }
   };
 

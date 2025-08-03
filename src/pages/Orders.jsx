@@ -37,7 +37,7 @@ const Orders = () => {
         setOrderData(allOrdersItem.reverse());
       }
     } catch (error) {
-      console.log(error);
+      // console.log(error);
       toast.error(error.message);
     }
   };

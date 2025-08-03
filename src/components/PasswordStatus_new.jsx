@@ -21,7 +21,6 @@ const PasswordStatus = ({ showDetails = true, className = "" }) => {
         setPasswordStatus(response.data);
         setError(null);
       } catch (err) {
-        console.error("Failed to fetch password status:", err);
         setError(err.message);
       } finally {
         setLoading(false);
@@ -59,7 +58,6 @@ const PasswordStatus = ({ showDetails = true, className = "" }) => {
 
   const { isExpired, isExpiring, expiresAt, daysUntilExpiry } = passwordStatus;
 
-  // Helper function to format date
   const formatDate = (dateString) => {
     return new Date(dateString).toLocaleDateString("en-US", {
       year: "numeric",
@@ -68,7 +66,6 @@ const PasswordStatus = ({ showDetails = true, className = "" }) => {
     });
   };
 
-  // Helper function to get status info
   const getStatusInfo = () => {
     if (isExpired) {
       return {
@@ -116,7 +113,6 @@ const PasswordStatus = ({ showDetails = true, className = "" }) => {
 
   const statusInfo = getStatusInfo();
 
-  // Compact view for navigation bar or small spaces
   if (!showDetails) {
     if (statusInfo.type === "error" || statusInfo.urgent) {
       return (
@@ -131,7 +127,6 @@ const PasswordStatus = ({ showDetails = true, className = "" }) => {
     return null;
   }
 
-  // Minimal detailed view that matches project design
   return (
     <div
       className={`p-4 ${statusInfo.bgColor} border ${statusInfo.borderColor} rounded-lg ${className}`}

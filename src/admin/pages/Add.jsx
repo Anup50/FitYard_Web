@@ -26,7 +26,6 @@ const Add = ({ token }) => {
   const onSubmitHandler = async (e) => {
     e.preventDefault();
 
-    // Basic validation
     if (!name.trim()) {
       toast.error("Product name is required");
       return;
@@ -55,7 +54,6 @@ const Add = ({ token }) => {
     try {
       setLoading(true);
 
-      // Sanitize form data before creating FormData
       const sanitizedData = sanitizeFormData({
         name: name.trim(),
         description: description.trim(),
@@ -101,7 +99,6 @@ const Add = ({ token }) => {
         toast.error(response.data.message);
       }
     } catch (error) {
-      console.log(error);
       toast.error(error.response?.data?.message || "Failed to add product");
     } finally {
       setLoading(false);

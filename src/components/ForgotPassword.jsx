@@ -21,20 +21,18 @@ const ForgotPassword = () => {
       toast.warning("Your password has expired. Please reset it to continue.");
     }
 
-    // Check for existing rate limit state
     const storedAttempts = localStorage.getItem("forgotPasswordAttempts");
     const storedTimestamp = localStorage.getItem("forgotPasswordTimestamp");
 
     if (storedAttempts && storedTimestamp) {
       const now = Date.now();
       const timeElapsed = now - parseInt(storedTimestamp);
-      const fifteenMinutes = 15 * 60 * 1000; // 15 minutes in milliseconds
+      const fifteenMinutes = 15 * 60 * 1000;
 
       if (timeElapsed < fifteenMinutes && parseInt(storedAttempts) >= 3) {
         setRateLimited(true);
         setCooldownTime(Math.ceil((fifteenMinutes - timeElapsed) / 1000));
       } else if (timeElapsed >= fifteenMinutes) {
-        // Reset attempts after cooldown
         localStorage.removeItem("forgotPasswordAttempts");
         localStorage.removeItem("forgotPasswordTimestamp");
       }
@@ -42,7 +40,6 @@ const ForgotPassword = () => {
   }, [isExpired]);
 
   useEffect(() => {
-    // Countdown timer for rate limiting
     if (rateLimited && cooldownTime > 0) {
       const timer = setTimeout(() => {
         setCooldownTime((prev) => {
@@ -72,13 +69,11 @@ const ForgotPassword = () => {
       return;
     }
 
-    // Sanitize email input
     const sanitizedData = sanitizeFormData({
       email: email.trim().toLowerCase(),
     });
     const sanitizedEmail = sanitizedData.email;
 
-    // Basic email validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(sanitizedEmail)) {
       toast.error("Please enter a valid email address");
@@ -90,32 +85,26 @@ const ForgotPassword = () => {
     try {
       await forgotPassword(sanitizedEmail);
 
-      // Track attempts for rate limiting
       const newAttempts = attempts + 1;
       setAttempts(newAttempts);
       localStorage.setItem("forgotPasswordAttempts", newAttempts.toString());
       localStorage.setItem("forgotPasswordTimestamp", Date.now().toString());
 
-      // Check if rate limit reached
       if (newAttempts >= 3) {
         setRateLimited(true);
-        setCooldownTime(15 * 60); // 15 minutes
+        setCooldownTime(15 * 60);
       }
 
       setSubmitted(true);
       toast.success("Password reset instructions have been sent to your email");
     } catch (error) {
-      console.error("Forgot password error:", error);
-
       if (error.status === 429) {
-        // Rate limited by server
         setRateLimited(true);
         setCooldownTime(15 * 60);
         toast.error(
           "Too many attempts. Please wait 15 minutes before trying again."
         );
       } else {
-        // Don't reveal if email exists or not for security
         toast.error(
           "If an account with that email exists, we have sent password reset instructions."
         );

@@ -16,8 +16,6 @@ import { getUserOrders } from "../api/orders";
 const Profile = () => {
   const { navigate } = useContext(ShopContext);
   const { user, logout } = useAuth();
-
-  // Profile data state
   const [profileData, setProfileData] = useState({
     name: "",
     email: "",
@@ -33,16 +31,13 @@ const Profile = () => {
     gender: "",
   });
 
-  // UI state
   const [activeTab, setActiveTab] = useState("profile");
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  // Order history state
   const [orders, setOrders] = useState([]);
   const [ordersLoading, setOrdersLoading] = useState(false);
 
-  // Load user profile data
   useEffect(() => {
     if (user) {
       setProfileData({
@@ -62,7 +57,6 @@ const Profile = () => {
     }
   }, [user]);
 
-  // Fetch user orders
   const fetchOrders = async () => {
     setOrdersLoading(true);
     try {
@@ -71,7 +65,7 @@ const Profile = () => {
         setOrders(response.data.orders);
       }
     } catch (error) {
-      console.log(error);
+      // console.log(error);
       toast.error("Failed to load orders");
     } finally {
       setOrdersLoading(false);
@@ -84,7 +78,6 @@ const Profile = () => {
     }
   }, [activeTab, user]);
 
-  // Handle profile update
   const handleProfileUpdate = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -99,14 +92,11 @@ const Profile = () => {
         toast.error(response.data.message);
       }
     } catch (error) {
-      console.log(error);
       toast.error("Failed to update profile");
     } finally {
       setLoading(false);
     }
   };
-
-  // Handle account deletion
   const handleDeleteAccount = async () => {
     if (
       window.confirm(
@@ -124,7 +114,7 @@ const Profile = () => {
           toast.error(response.data.message);
         }
       } catch (error) {
-        console.log(error);
+        // console.log(error);
         toast.error("Failed to delete account");
       }
     }

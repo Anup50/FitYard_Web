@@ -5,8 +5,6 @@ import { sanitizeText, sanitizeURL } from "../utils/sanitizer";
 
 const ProductItem = ({ id, image, name, price }) => {
   const { currency } = useContext(ShopContext);
-
-  // Sanitize inputs
   const safeName = sanitizeText(name);
   const safePrice =
     typeof price === "number" ? price : sanitizeText(String(price));

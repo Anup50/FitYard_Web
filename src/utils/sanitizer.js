@@ -130,10 +130,8 @@ export const sanitizeURL = (url) => {
     return "";
   }
 
-  // Remove any whitespace
   const cleanUrl = url.trim();
 
-  // Block dangerous protocols
   const dangerousProtocols = [
     "javascript:",
     "data:",
@@ -149,7 +147,6 @@ export const sanitizeURL = (url) => {
     }
   }
 
-  // Allow only http, https, mailto, tel protocols and relative URLs
   const allowedProtocolPattern = /^(https?:\/\/|mailto:|tel:|\/|\.\/|#)/i;
 
   if (!allowedProtocolPattern.test(cleanUrl)) {
@@ -169,7 +166,6 @@ export const sanitizeCSS = (styles) => {
     return "";
   }
 
-  // Remove dangerous CSS properties and values
   const dangerousPatterns = [
     /expression\s*\(/gi,
     /javascript\s*:/gi,
@@ -218,15 +214,12 @@ export const sanitizeFormData = (formData) => {
     const value = formData[key];
 
     if (typeof value === "string") {
-      // For most form fields, we want to preserve text but remove HTML
       sanitized[key] = sanitizeText(value);
     } else if (Array.isArray(value)) {
-      // For arrays, sanitize each string element
       sanitized[key] = value.map((item) =>
         typeof item === "string" ? sanitizeText(item) : item
       );
     } else {
-      // For other types, keep as is (numbers, booleans, etc.)
       sanitized[key] = value;
     }
   });
@@ -234,5 +227,4 @@ export const sanitizeFormData = (formData) => {
   return sanitized;
 };
 
-// Export DOMPurify instance for advanced use cases
 export { DOMPurify };

@@ -20,18 +20,14 @@ const Login = () => {
   console.log("Admin login page - from:", from);
   console.log("location.state:", location.state);
 
-  // Redirect if already authenticated as admin
   useEffect(() => {
     if (isAuthenticated() && isAdmin()) {
-      console.log("Already authenticated admin, redirecting to:", from);
       navigate(from, { replace: true });
     }
   }, [isAuthenticated, isAdmin, navigate, from]);
 
   const onSubmitHandler = async (e) => {
     e.preventDefault();
-
-    // Check CAPTCHA
     if (!captchaValue) {
       toast.error("Please complete the CAPTCHA verification");
       return;
@@ -41,8 +37,6 @@ const Login = () => {
 
     try {
       console.log("Attempting admin login...");
-
-      // Sanitize form data before sending
       const sanitizedData = sanitizeFormData({ email, password });
 
       const result = await login(
@@ -50,24 +44,23 @@ const Login = () => {
         sanitizedData.password,
         true,
         captchaValue
-      ); // true for admin login, with captcha
+      );
       console.log("Login result:", result);
 
       if (result.success) {
         toast.success("Admin login successful!");
         console.log("Redirecting to admin dashboard");
-        // Redirect to admin add page directly
-        window.location.href = "/admin/add";
+        setTimeout(() => {
+          navigate(from, { replace: true });
+        }, 100);
       } else {
         toast.error(result.message || "Login failed");
-        // Reset captcha on error
         setCaptchaValue(null);
         captchaRef.current?.reset();
       }
     } catch (error) {
       console.log("Login error:", error);
       toast.error("Login failed. Please try again.");
-      // Reset captcha on error
       setCaptchaValue(null);
       captchaRef.current?.reset();
     } finally {

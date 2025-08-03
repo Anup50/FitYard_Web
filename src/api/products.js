@@ -1,13 +1,16 @@
 import axiosInstance from "./axiosInstance";
 
-export const addProduct = async (formData, token) => {
-  return axiosInstance.post("/api/product/add", formData, {
-    headers: { token }, // Keep this for backward compatibility with your backend
-  });
+export const addProduct = async (formData) => {
+  return axiosInstance.post("/api/product/add", formData);
 };
 
 export const fetchProducts = () => axiosInstance.get("/api/product/list");
-export const removeProduct = (id) =>
-  axiosInstance.delete(`/api/product/remove/${id}`);
+
+export const removeProduct = async (id) => {
+  return axiosInstance.delete(`/api/product/remove/${id}`, {
+    data: { id },
+  });
+};
+
 export const fetchSingleProduct = (id) =>
   axiosInstance.get(`/api/product/single/${id}`);

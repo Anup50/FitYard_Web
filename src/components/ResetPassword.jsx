@@ -37,7 +37,6 @@ const ResetPassword = () => {
   });
 
   useEffect(() => {
-    // Validate that we have the required URL parameters
     if (!token || !email) {
       toast.error("Invalid reset link. Please request a new password reset.");
       setTokenValid(false);
@@ -46,7 +45,6 @@ const ResetPassword = () => {
       }, 3000);
     }
 
-    // Basic token format validation (you can make this more sophisticated)
     if (token && (token.length < 10 || !/^[a-zA-Z0-9]+$/.test(token))) {
       toast.error("Invalid reset token format.");
       setTokenValid(false);
@@ -56,7 +54,6 @@ const ResetPassword = () => {
   const handleInputChange = (e) => {
     const { name, value } = e.target;
 
-    // Sanitize input data
     const sanitizedData = sanitizeFormData({ [name]: value });
     const sanitizedValue = sanitizedData[name];
 
@@ -65,7 +62,6 @@ const ResetPassword = () => {
       [name]: sanitizedValue,
     }));
 
-    // Validate password strength
     if (name === "newPassword") {
       const passwordValidation = validatePassword(sanitizedValue);
       setValidation((prev) => ({
@@ -74,7 +70,6 @@ const ResetPassword = () => {
       }));
     }
 
-    // Validate password confirmation
     if (
       name === "confirmPassword" ||
       (name === "newPassword" && formData.confirmPassword)
@@ -105,7 +100,6 @@ const ResetPassword = () => {
       return;
     }
 
-    // Final validation
     const passwordValidation = validatePassword(formData.newPassword);
     const confirmValidation = validatePasswordMatch(
       formData.newPassword,
@@ -126,10 +120,8 @@ const ResetPassword = () => {
         "Password reset successfully! You can now log in with your new password."
       );
 
-      // Clear any stored password expiry flags
       localStorage.removeItem("passwordExpired");
 
-      // Redirect to login after a brief delay
       setTimeout(() => {
         navigate("/login", {
           state: {
@@ -139,8 +131,6 @@ const ResetPassword = () => {
         });
       }, 2000);
     } catch (error) {
-      console.error("Password reset error:", error);
-
       if (error.status === 400) {
         toast.error(
           "Invalid or expired reset token. Please request a new password reset."

@@ -35,7 +35,6 @@ const AuditLogs = () => {
     limit: 25,
   });
 
-  // Initialize with default date range
   useEffect(() => {
     handleDatePresetChange("7d");
   }, []);
@@ -63,7 +62,7 @@ const AuditLogs = () => {
       setFilters((prev) => ({
         ...prev,
         [key]: value,
-        page: 1, // Reset to first page when filtering
+        page: 1,
       }));
     }
   };
@@ -238,32 +237,21 @@ const AuditLogs = () => {
         endDate: filters.dateRange.endDate,
       };
 
-      // Remove empty params
       const cleanParams = Object.fromEntries(
         Object.entries(queryParams).filter(([_, value]) => value !== "")
       );
 
-      console.log("Fetching audit logs with params:", cleanParams);
       const response = await getAuditLogs(cleanParams);
-      console.log("Audit logs response:", response);
-      console.log(
-        "Response data structure:",
-        JSON.stringify(response.data, null, 2)
-      );
 
-      // Handle different response formats
       let logsData = [];
       let paginationData = {};
 
       if (response.data) {
-        // Check if response.data.success exists and is true
         if (response.data.success === true) {
           logsData = response.data.logs || response.data.data?.logs || [];
           paginationData =
             response.data.pagination || response.data.data?.pagination || {};
-        }
-        // Check if response.data directly contains logs array
-        else if (Array.isArray(response.data)) {
+        } else if (Array.isArray(response.data)) {
           logsData = response.data;
           paginationData = {
             currentPage: 1,
@@ -271,21 +259,14 @@ const AuditLogs = () => {
             totalLogs: response.data.length,
             limit: 25,
           };
-        }
-        // Check if response.data.logs exists directly
-        else if (response.data.logs) {
+        } else if (response.data.logs) {
           logsData = response.data.logs;
           paginationData = response.data.pagination || {};
-        }
-        // Last resort: check if response itself has the data
-        else if (response.logs) {
+        } else if (response.logs) {
           logsData = response.logs;
           paginationData = response.pagination || {};
         }
       }
-
-      console.log("Processed logs data:", logsData);
-      console.log("Processed pagination data:", paginationData);
 
       if (Array.isArray(logsData) && logsData.length >= 0) {
         setLogs(logsData);
@@ -297,25 +278,13 @@ const AuditLogs = () => {
         });
 
         if (logsData.length === 0) {
-          console.log(
-            "No logs found - this could be due to filters or empty database"
-          );
         } else {
-          console.log(`Successfully loaded ${logsData.length} logs`);
         }
       } else {
-        console.error(
-          "Invalid response format - logs data is not an array:",
-          response
-        );
         toast.error("Failed to fetch audit logs - Invalid response format");
       }
     } catch (error) {
-      console.error("Error fetching logs:", error);
       if (error.response) {
-        // Server responded with error status
-        console.error("Response status:", error.response.status);
-        console.error("Response data:", error.response.data);
         if (error.response.status === 404) {
           toast.error(
             "Audit logs API endpoint not found. Please check if the backend supports audit logging."
@@ -330,8 +299,6 @@ const AuditLogs = () => {
           );
         }
       } else if (error.request) {
-        // Network error
-        console.error("Network error:", error.request);
         toast.error(
           "Network error: Cannot connect to backend server. Please check if the backend is running on https://localhost:4000"
         );
@@ -346,18 +313,15 @@ const AuditLogs = () => {
   const fetchStats = async () => {
     try {
       setLoading(true);
-      console.log("Fetching audit stats...");
+
       const response = await getAuditStats();
-      console.log("Audit stats response:", response);
 
       if (response.data && response.data.success) {
         setStats(response.data.data || {});
       } else {
-        console.error("Invalid stats response format:", response);
         toast.error("Failed to fetch statistics - Invalid response format");
       }
     } catch (error) {
-      console.error("Error fetching stats:", error);
       if (error.response?.status === 404) {
         toast.error("Audit statistics API endpoint not found");
       } else if (error.response?.status === 401) {
@@ -392,7 +356,6 @@ const AuditLogs = () => {
 
       const response = await exportAuditLogs(cleanParams);
 
-      // The response.data is already a blob from the API
       const blob = response.data;
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement("a");
@@ -406,7 +369,6 @@ const AuditLogs = () => {
       window.URL.revokeObjectURL(url);
       toast.success("Audit logs exported successfully");
     } catch (error) {
-      console.error("Error exporting logs:", error);
       toast.error("Error exporting audit logs");
     } finally {
       setExportLoading(false);

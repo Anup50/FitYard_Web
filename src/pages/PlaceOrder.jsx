@@ -110,7 +110,7 @@ const PlaceOrder = () => {
           break;
       }
     } catch (error) {
-      console.log(error);
+      // console.log(error);
       toast.error(error.message);
     }
   };

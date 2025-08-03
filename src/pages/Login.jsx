@@ -85,7 +85,7 @@ const Login = () => {
         }
       }
     } catch (error) {
-      console.log(error);
+      // console.log(error);
       toast.error(error.response?.data?.message || error.message);
       // Reset captcha on error only for login
       if (currentState === "Login") {
@@ -104,11 +104,8 @@ const Login = () => {
     }
   };
 
-  // Handle successful OTP verification
   const handleOTPVerifySuccess = (otpData) => {
     if (pendingRegistration?.isLogin) {
-      // Login OTP verification successful
-      // If the OTP response includes user data, use it to complete login
       if (otpData.user) {
         completeLoginAfterOTP(otpData.user);
       }
@@ -204,7 +201,7 @@ const Login = () => {
           onChange={(e) => setEmail(e.target.value)}
           value={email}
         />
-        <div className="relative">
+        <div className="relative w-full">
           <input
             type={showPassword ? "text" : "password"}
             className="w-full px-3 py-2 pr-10 border border-gray-800"

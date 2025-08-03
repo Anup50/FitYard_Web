@@ -27,6 +27,7 @@ const UpdatePassword = ({ onSuccess, className = "" }) => {
   });
 
   const [validation, setValidation] = useState({
+    currentPassword: { isValid: true, error: null },
     newPassword: { isValid: true, errors: [], strength: "weak", score: 0 },
     confirmPassword: { isValid: true, error: null },
   });
@@ -34,7 +35,6 @@ const UpdatePassword = ({ onSuccess, className = "" }) => {
   const handleInputChange = (e) => {
     const { name, value } = e.target;
 
-    // Sanitize input data
     const sanitizedData = sanitizeFormData({ [name]: value });
     const sanitizedValue = sanitizedData[name];
 
@@ -43,7 +43,13 @@ const UpdatePassword = ({ onSuccess, className = "" }) => {
       [name]: sanitizedValue,
     }));
 
-    // Validate password strength
+    if (name === "currentPassword" && !validation.currentPassword.isValid) {
+      setValidation((prev) => ({
+        ...prev,
+        currentPassword: { isValid: true, error: null },
+      }));
+    }
+
     if (name === "newPassword") {
       const passwordValidation = validatePassword(sanitizedValue);
       setValidation((prev) => ({
@@ -52,7 +58,6 @@ const UpdatePassword = ({ onSuccess, className = "" }) => {
       }));
     }
 
-    // Validate password confirmation
     if (
       name === "confirmPassword" ||
       (name === "newPassword" && formData.confirmPassword)
@@ -83,7 +88,6 @@ const UpdatePassword = ({ onSuccess, className = "" }) => {
       return;
     }
 
-    // Final validation
     const passwordValidation = validatePassword(formData.newPassword);
     const confirmValidation = validatePasswordMatch(
       formData.newPassword,
@@ -111,15 +115,14 @@ const UpdatePassword = ({ onSuccess, className = "" }) => {
 
       toast.success("Password updated successfully");
 
-      // Clear form
       setFormData({
         currentPassword: "",
         newPassword: "",
         confirmPassword: "",
       });
 
-      // Reset validation
       setValidation({
+        currentPassword: { isValid: true, error: null },
         newPassword: { isValid: true, errors: [], strength: "weak", score: 0 },
         confirmPassword: { isValid: true, error: null },
       });
@@ -128,8 +131,34 @@ const UpdatePassword = ({ onSuccess, className = "" }) => {
         onSuccess();
       }
     } catch (error) {
-      console.error("Password update error:", error);
-      toast.error(error.message || "Failed to update password");
+      if (error.status === 401) {
+        if (
+          error.message.includes("Current password is incorrect") ||
+          error.message.includes("current password")
+        ) {
+          toast.error("Current password is incorrect. Please try again.");
+
+          setValidation((prev) => ({
+            ...prev,
+            currentPassword: {
+              isValid: false,
+              error: "Current password is incorrect",
+            },
+          }));
+        } else {
+          toast.error("Authentication failed. Please try again.");
+        }
+      } else if (error.status === 400) {
+        toast.error(
+          error.message || "Invalid password data. Please check your input."
+        );
+      } else if (error.status === 403) {
+        toast.error("You don't have permission to update this password.");
+      } else {
+        toast.error(
+          error.message || "Failed to update password. Please try again."
+        );
+      }
     } finally {
       setLoading(false);
     }
@@ -155,7 +184,11 @@ const UpdatePassword = ({ onSuccess, className = "" }) => {
               name="currentPassword"
               value={formData.currentPassword}
               onChange={handleInputChange}
-              className="w-full px-3 py-2 pr-10 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className={`w-full px-3 py-2 pr-10 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                !validation.currentPassword.isValid
+                  ? "border-red-500 bg-red-50"
+                  : "border-gray-300"
+              }`}
               required
               disabled={loading}
             />
@@ -164,6 +197,11 @@ const UpdatePassword = ({ onSuccess, className = "" }) => {
               toggleVisibility={() => togglePasswordVisibility("current")}
             />
           </div>
+          {!validation.currentPassword.isValid && (
+            <p className="text-red-500 text-sm mt-1">
+              {validation.currentPassword.error}
+            </p>
+          )}
         </div>
 
         {/* New Password */}
